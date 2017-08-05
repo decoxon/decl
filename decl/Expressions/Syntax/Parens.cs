@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace decl.Expressions
+namespace declang.Expressions
 {
     internal class Parens : IExpression
     {
@@ -15,9 +15,9 @@ namespace decl.Expressions
             this.innerExpression = innerExpression;
         }
 
-        public int Evaluate()
+        public ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            return innerExpression.Evaluate();
+            return innerExpression.Evaluate(context);
         }
 
         public override string ToString()

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace decl.Dice
+namespace declang.Dice
 {
     public class ContiguousNumericDie : Die
     {

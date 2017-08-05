@@ -1,23 +1,10 @@
-﻿using decl.Expressions;
+﻿using declang.Expressions;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
-namespace decl.Parser
+namespace declang.Parsing
 {
-    /// <summary>
-    /// The types of expressions recognised by the <see cref="Parser"/>.
-    /// </summary>
-    internal enum ExpressionType
-    {
-        Number,
-        Addition,
-        Subtraction,
-        Multiplication,
-        Division,
-        Parens,
-        DiceRoll
-    }
-
     internal static class Parser
     {
         /// <summary>
@@ -25,13 +12,27 @@ namespace decl.Parser
         /// </summary>
         public static Dictionary<ExpressionType, char[]> ExpressionCharacters = new Dictionary<ExpressionType, char[]>
         {
-            {ExpressionType.Number,         new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} },
+            {ExpressionType.Number, new char[11] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'} },
+            {ExpressionType.Variable, new char[53]
+                {
+                    'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                    'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+                    '_'
+                }
+            },
             {ExpressionType.Addition,       new char[1]  {'+'} },
             {ExpressionType.Subtraction,    new char[1]  {'-'} },
-            {ExpressionType.Multiplication, new char[2]  {'*', 'x'} },
+            {ExpressionType.Multiplication, new char[1]  {'*'} },
             {ExpressionType.Division,       new char[1]  {'/'} },
-            {ExpressionType.Parens,         new char[2]  {'(', ')'} },
-            {ExpressionType.DiceRoll,       new char[2]  {'D', 'd'} }
+            {ExpressionType.Parens,         new char[2]  {'(', ')'} }
+        };
+
+        private static char[] validIdentifierCharacters = new char[63]
+        {
+             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+             'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+             'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+             '_'
         };
 
         /// <summary>
@@ -39,13 +40,14 @@ namespace decl.Parser
         /// </summary>
         public static Dictionary<ExpressionType, int> ExpressionPrecedence = new Dictionary<ExpressionType, int>
         {
+            {ExpressionType.Variable,       3 },
             {ExpressionType.Number,         3 },
-            {ExpressionType.Addition,       1 },
-            {ExpressionType.Subtraction,    1 },
+            {ExpressionType.Parens,         3 },
             {ExpressionType.Multiplication, 2 },
             {ExpressionType.Division,       2 },
-            {ExpressionType.Parens,         3 },
-            {ExpressionType.DiceRoll,       2 }
+            {ExpressionType.DiceRoll,       2 },
+            {ExpressionType.Addition,       1 },
+            {ExpressionType.Subtraction,    1 },
         };
 
         /// <summary>
@@ -85,7 +87,9 @@ namespace decl.Parser
             switch (tokens[selectedToken].Type)
             {
                 case ExpressionType.Number:
-                    return new Number(Int32.Parse(tokens[selectedToken].Value));
+                    return new Number(tokens[selectedToken].Value);
+                case ExpressionType.Variable:
+                    return new Variable(tokens[selectedToken].Value);
                 case ExpressionType.Parens:
                     return new Parens(createExpressionTree(tokeniseExpression(tokens[selectedToken].Value)));
                 case ExpressionType.Addition:
@@ -123,25 +127,75 @@ namespace decl.Parser
         {
             List<Token> tokens = new List<Token>();
             string tokenValue;
-
+            int endOfToken;
+            int numDecimalPoints = 0;
 
             for (int currentCharacter = 0; currentCharacter < expression.Length; currentCharacter++)
             {
-                ExpressionType type = getExpressionType(expression[currentCharacter]);
+                if(expression[currentCharacter] == ' ')
+                {
+                    continue;
+                }
+
+                ExpressionType type = getCharacterType(expression[currentCharacter]);
 
                 switch (type)
                 {
                     case ExpressionType.Number:
                         // Numbers can be multiple characters so we need to find the end of the number.
-                        int endOfNumber = currentCharacter;
-                        while (endOfNumber < expression.Length && getExpressionType(expression[endOfNumber]) == ExpressionType.Number)
+                        endOfToken = currentCharacter;
+                        while (endOfToken < expression.Length && getCharacterType(expression[endOfToken]) == ExpressionType.Number)
                         {
-                            endOfNumber++;
+                            // Count decimal points and throw exception if there are more than one.
+                            if(expression[endOfToken] == '.')
+                            {
+                                numDecimalPoints++;
+                            }
+
+                            if(numDecimalPoints > 1)
+                            {
+                                throw new Exception(String.Format("Too many decimal points in expression {0}.", expression));
+                            }
+
+                            endOfToken++;
                         }
-                        endOfNumber--;
-                        tokenValue = expression.Substring(currentCharacter, endOfNumber - currentCharacter + 1);
+                        endOfToken--;
+
+                        tokenValue = expression.Substring(currentCharacter, endOfToken - currentCharacter + 1);
                         tokens.Add(new Token(type, tokenValue, ExpressionPrecedence[type]));
-                        currentCharacter = endOfNumber;
+                        currentCharacter = endOfToken;
+                        break;
+                    case ExpressionType.Variable:
+                        ExpressionType tokenType = type;
+                        endOfToken = currentCharacter;
+
+                        // Check for DiceRoll operator
+                        if ((expression[currentCharacter] == 'd' || expression[currentCharacter] == 'D') 
+                            && getCharacterType(expression[currentCharacter + 1]) == ExpressionType.Number)
+                        {
+                            tokenType = ExpressionType.DiceRoll;
+
+                            // To allow users to say "d6" instead of having to type out "1d6", we'll add a 1 when
+                            // there isn't a number present before the D operator because it is a binary operator and
+                            // therefore requires two operands.
+                            if(tokens.Count == 0 || tokens[tokens.Count - 1].Type != ExpressionType.Number)
+                            {
+                                tokens.Add(new Token(ExpressionType.Number, "1", ExpressionPrecedence[ExpressionType.Number]));
+                            }
+                        }
+                        else
+                        {
+                            // Identifiers can be multiple characters so we need to find the end of the identifier.
+                            while (endOfToken < expression.Length && isValidNonInitialIdentifierCharacter(expression[endOfToken]))
+                            {
+                                endOfToken++;
+                            }
+                            endOfToken--;
+                        }
+
+                        tokenValue = expression.Substring(currentCharacter, endOfToken - currentCharacter + 1);
+                        tokens.Add(new Token(tokenType, tokenValue, ExpressionPrecedence[tokenType]));
+                        currentCharacter = endOfToken;
                         break;
                     case ExpressionType.Parens:
                         // Look for matching closing paren
@@ -185,7 +239,14 @@ namespace decl.Parser
             return tokens;
         }
 
-        private static ExpressionType getExpressionType(char c)
+        private static Dictionary<ExpressionType, string> identifierPatterns = new Dictionary<ExpressionType, string>
+        {
+            {ExpressionType.Variable, @"^[a-zA-Z][a-zA-Z0-9]*$" },
+            {ExpressionType.DiceRoll, @"^\d*[dD]{1}\d+$" },
+            {ExpressionType.Number,   @"^\d+\.\d+$" },
+        };
+
+        private static ExpressionType getCharacterType(char c)
         {
             foreach (KeyValuePair<ExpressionType, char[]> type in ExpressionCharacters)
             {
@@ -199,6 +260,19 @@ namespace decl.Parser
             }
 
             throw new Exception(String.Format("Invalid character '{0}' in expression.", c));
+        }
+
+        private static bool isValidNonInitialIdentifierCharacter(char character)
+        {
+            for (var i = 0; i < validIdentifierCharacters.Length; i++)
+            {
+                if (character == validIdentifierCharacters[i])
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

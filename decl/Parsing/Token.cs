@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using declang.Expressions;
 
-namespace decl.Parser
+namespace declang.Parsing
 {
     internal class Token
     {

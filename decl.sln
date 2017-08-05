@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "decl", "decl\decl.csproj", "{1237FA91-F338-40F5-B67A-3CC66C3CD2C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "declang", "decl\declang.csproj", "{1237FA91-F338-40F5-B67A-3CC66C3CD2C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "decl", "declPrompt\decl.csproj", "{19788B8B-3E8B-494F-9E16-3E7C82C5DAC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{1237FA91-F338-40F5-B67A-3CC66C3CD2C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1237FA91-F338-40F5-B67A-3CC66C3CD2C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1237FA91-F338-40F5-B67A-3CC66C3CD2C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19788B8B-3E8B-494F-9E16-3E7C82C5DAC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19788B8B-3E8B-494F-9E16-3E7C82C5DAC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19788B8B-3E8B-494F-9E16-3E7C82C5DAC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19788B8B-3E8B-494F-9E16-3E7C82C5DAC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

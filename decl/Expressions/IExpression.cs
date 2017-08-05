@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace decl.Expressions
+namespace declang.Expressions
 {
     internal interface IExpression
     {
-        int Evaluate();
+        ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context);
     }
 }
