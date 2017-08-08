@@ -24,6 +24,7 @@ namespace declang.Parsing
             {ExpressionType.Subtraction,    new char[1]  {'-'} },
             {ExpressionType.Multiplication, new char[1]  {'*'} },
             {ExpressionType.Division,       new char[1]  {'/'} },
+            {ExpressionType.Assignment,     new char[1]  {'='} },
             {ExpressionType.Parens,         new char[2]  {'(', ')'} }
         };
 
@@ -40,14 +41,15 @@ namespace declang.Parsing
         /// </summary>
         public static Dictionary<ExpressionType, int> ExpressionPrecedence = new Dictionary<ExpressionType, int>
         {
-            {ExpressionType.Variable,       3 },
-            {ExpressionType.Number,         3 },
-            {ExpressionType.Parens,         3 },
-            {ExpressionType.Multiplication, 2 },
-            {ExpressionType.Division,       2 },
-            {ExpressionType.DiceRoll,       2 },
-            {ExpressionType.Addition,       1 },
-            {ExpressionType.Subtraction,    1 },
+            {ExpressionType.Variable,       4 },
+            {ExpressionType.Number,         4 },
+            {ExpressionType.Parens,         4 },
+            {ExpressionType.Multiplication, 3 },
+            {ExpressionType.Division,       3 },
+            {ExpressionType.DiceRoll,       3 },
+            {ExpressionType.Addition,       2 },
+            {ExpressionType.Subtraction,    2 },
+            {ExpressionType.Assignment,     1 },
         };
 
         /// <summary>
@@ -111,6 +113,17 @@ namespace declang.Parsing
                 case ExpressionType.DiceRoll:
                     return new DiceRoll(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.Assignment:
+                    IExpression leftOperand = createExpressionTree(tokens.GetRange(0, selectedToken));
+
+                    if ((leftOperand as Variable) == null)
+                    {
+                        throw new Exception(String.Format("Invalid left operand for assignment: {0}", leftOperand.ToString()));
+                    }
+
+                    return new Assignment(
+                        leftOperand as Variable,
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 default:
                     throw new Exception(String.Format("Unrecognised expression type '{0}'.", tokens[selectedToken].Type.ToString()));
@@ -231,6 +244,7 @@ namespace declang.Parsing
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
                     case ExpressionType.DiceRoll:
+                    case ExpressionType.Assignment:
                         tokens.Add(new Token(type, expression.Substring(currentCharacter, 1), ExpressionPrecedence[type]));
                         break;
                 }

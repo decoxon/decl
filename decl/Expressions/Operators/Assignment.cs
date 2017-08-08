@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace declang.Expressions.Operators
+namespace declang.Expressions
 {
     class Assignment : BinaryOperator
     {
@@ -13,8 +13,9 @@ namespace declang.Expressions.Operators
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            context[((Variable)LeftOperand).Name] = RightOperand.Evaluate(context);
-            return LeftOperand.Evaluate(context);
+            ExpressionResult result = RightOperand.Evaluate(context);
+            context[((Variable)LeftOperand).Name] = result;
+            return result;
         }
     }
 }

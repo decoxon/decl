@@ -17,5 +17,6 @@ namespace declang
         Parens,
         DiceRoll,
         Number,
+        Assignment,
     }
 }
