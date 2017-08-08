@@ -38,7 +38,7 @@ namespace declPrompt
                 case "reset":
                     context = new Dictionary<string, ExpressionResult>();
                     break;
-                case "current context":
+                case "context":
                     outputContext();
                     break;
                 default:
