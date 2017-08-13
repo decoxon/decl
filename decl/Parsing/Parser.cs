@@ -44,8 +44,9 @@ namespace declang.Parsing
         {
             {ExpressionType.Variable,       4 },
             {ExpressionType.Number,         4 },
+            {ExpressionType.Truth,          4 },
+            {ExpressionType.Word,           4 },
             {ExpressionType.Parens,         4 },
-            {ExpressionType.Word,         4 },
             {ExpressionType.Multiplication, 3 },
             {ExpressionType.Division,       3 },
             {ExpressionType.DiceRoll,       3 },
@@ -94,6 +95,8 @@ namespace declang.Parsing
                     return new Number(tokens[selectedToken].Value);
                 case ExpressionType.Variable:
                     return new Variable(tokens[selectedToken].Value);
+                case ExpressionType.Truth:
+                    return new Truth(tokens[selectedToken].Value);
                 case ExpressionType.Parens:
                     return new Parens(createExpressionTree(tokeniseExpression(tokens[selectedToken].Value)));
                 case ExpressionType.Addition:
@@ -196,6 +199,23 @@ namespace declang.Parsing
                             if(tokens.Count == 0 || tokens[tokens.Count - 1].Type != ExpressionType.Number)
                             {
                                 tokens.Add(new Token(ExpressionType.Number, "1", ExpressionPrecedence[ExpressionType.Number]));
+                            }
+                        }
+                        // Check for truth value
+                        else if (expression.Substring(currentCharacter,4).Equals("true", StringComparison.CurrentCultureIgnoreCase) 
+                            || expression.Substring(currentCharacter, 5).Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            tokenType = ExpressionType.Truth;
+
+                            if (expression.Substring(currentCharacter, 4).Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                tokenValue = "true";
+                                endOfToken = currentCharacter + 4;
+                            }
+                            else
+                            {
+                                tokenValue = "false";
+                                endOfToken = currentCharacter + 5;
                             }
                         }
                         else

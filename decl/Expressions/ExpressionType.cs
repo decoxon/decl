@@ -17,6 +17,7 @@ namespace declang
         Parens,
         DiceRoll,
         Number,
+        Truth,
         Assignment,
         Word
     }
