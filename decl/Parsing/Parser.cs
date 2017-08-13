@@ -25,7 +25,8 @@ namespace declang.Parsing
             {ExpressionType.Multiplication, new char[1]  {'*'} },
             {ExpressionType.Division,       new char[1]  {'/'} },
             {ExpressionType.Assignment,     new char[1]  {'='} },
-            {ExpressionType.Parens,         new char[2]  {'(', ')'} }
+            {ExpressionType.Parens,         new char[2]  {'(', ')'} },
+            {ExpressionType.Word,         new char[2]  {'"', '"'} }
         };
 
         private static char[] validIdentifierCharacters = new char[63]
@@ -44,6 +45,7 @@ namespace declang.Parsing
             {ExpressionType.Variable,       4 },
             {ExpressionType.Number,         4 },
             {ExpressionType.Parens,         4 },
+            {ExpressionType.Word,         4 },
             {ExpressionType.Multiplication, 3 },
             {ExpressionType.Division,       3 },
             {ExpressionType.DiceRoll,       3 },
@@ -211,33 +213,16 @@ namespace declang.Parsing
                         currentCharacter = endOfToken;
                         break;
                     case ExpressionType.Parens:
-                        // Look for matching closing paren
-                        int endOfParen = currentCharacter + 1;
-                        int nestingLevel = 0;
-
-                        for (; endOfParen < expression.Length; endOfParen++)
-                        {
-                            if (expression[endOfParen] == ')')
-                            {
-                                if (nestingLevel == 0)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    nestingLevel--;
-                                }
-                            }
-
-                            if (expression[endOfParen] == '(')
-                            {
-                                nestingLevel++;
-                            }
-                        }
-
+                        int endOfParen = findEndOfNestingExpression(expression, currentCharacter + 1, '(', ')');
                         tokenValue = expression.Substring(currentCharacter + 1, endOfParen - currentCharacter - 1);
                         tokens.Add(new Token(type, tokenValue, ExpressionPrecedence[type]));
                         currentCharacter = endOfParen;
+                        break;
+                    case ExpressionType.Word:
+                        int endOfString = findEndOfNestingExpression(expression, currentCharacter + 1, '"', '"', true);
+                        tokenValue = expression.Substring(currentCharacter + 1, endOfString - currentCharacter - 1);
+                        tokens.Add(new Token(type, tokenValue, ExpressionPrecedence[type]));
+                        currentCharacter = endOfString;
                         break;
                     case ExpressionType.Addition:
                     case ExpressionType.Subtraction:
@@ -251,6 +236,40 @@ namespace declang.Parsing
             }
 
             return tokens;
+        }
+
+        private static int findEndOfNestingExpression(string expression, int startAt, char openingCharacter, char closingCharacter, bool canEscape = false, char escapeChar = '\\')
+        {
+            int nestingLevel = 0;
+            int ending = startAt;
+
+            for (; ending < expression.Length; ending++)
+            {
+                if(canEscape && expression[ending] == escapeChar)
+                {
+                    ending++;
+                    continue;
+                }
+
+                if (expression[ending] == closingCharacter)
+                {
+                    if (nestingLevel == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        nestingLevel--;
+                    }
+                }
+
+                if (expression[ending] == closingCharacter)
+                {
+                    nestingLevel++;
+                }
+            }
+
+            return ending;
         }
 
         private static Dictionary<ExpressionType, string> identifierPatterns = new Dictionary<ExpressionType, string>

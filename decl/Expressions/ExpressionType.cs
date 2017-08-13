@@ -18,5 +18,6 @@ namespace declang
         DiceRoll,
         Number,
         Assignment,
+        Word
     }
 }
