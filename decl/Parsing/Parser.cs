@@ -83,6 +83,11 @@ namespace declang.Parsing
         /// <returns>The completed expression tree.</returns>
         private static IExpression createExpressionTree(List<Token> tokens)
         {
+            if(tokens.Count <= 0)
+            {
+                return new Word("");
+            }
+
             // Find the right-most, lowest precedence token
             int selectedToken = tokens.Count - 1;
 
@@ -157,9 +162,16 @@ namespace declang.Parsing
         private static List<Token> tokeniseExpression(string expression)
         {
             List<Token> tokens = new List<Token>();
+
+            if(expression == null || expression.Length == 0)
+            {
+                return tokens;
+            }
+
             string tokenValue;
             int endOfToken;
             int numDecimalPoints;
+            bool useDefaultTokenCreationMethod;
 
             for (int currentCharacter = 0; currentCharacter < expression.Length; currentCharacter++)
             {
@@ -169,6 +181,7 @@ namespace declang.Parsing
                 }
 
                 ExpressionType type = getCharacterType(expression[currentCharacter]);
+                useDefaultTokenCreationMethod = false;
 
                 switch (type)
                 {
@@ -176,7 +189,9 @@ namespace declang.Parsing
                         // Numbers can be multiple characters so we need to find the end of the number.
                         endOfToken = currentCharacter;
                         numDecimalPoints = 0;
-                        while (endOfToken < expression.Length && getCharacterType(expression[endOfToken]) == ExpressionType.Number)
+                        while (endOfToken < expression.Length 
+                            && (getCharacterType(expression[endOfToken]) == ExpressionType.Number 
+                                || (endOfToken == currentCharacter && (expression[endOfToken] == '-' || expression[endOfToken] == '+'))))
                         {
                             // Count decimal points and throw exception if there are more than one.
                             if(expression[endOfToken] == '.')
@@ -216,8 +231,8 @@ namespace declang.Parsing
                             }
                         }
                         // Check for truth value
-                        else if (expression.Substring(currentCharacter,4).Equals("true", StringComparison.CurrentCultureIgnoreCase) 
-                            || expression.Substring(currentCharacter, 5).Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                        else if ((expression.Length >= currentCharacter + 4 && expression.Substring(currentCharacter,4).Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                            || (expression.Length >= currentCharacter + 5 && expression.Substring(currentCharacter, 5).Equals("false", StringComparison.CurrentCultureIgnoreCase)))
                         {
                             tokenType = ExpressionType.Truth;
 
@@ -260,18 +275,40 @@ namespace declang.Parsing
                         break;
                     case ExpressionType.Addition:
                     case ExpressionType.Subtraction:
+                        // If this is the first character in the expression or the previous token is an operator then we have a unary
+                        // plus or minus operator that should be treated as a number.
+                        if(tokens.Count == 0 || isAnOperator(tokens[tokens.Count - 1].Type))
+                        {
+                            type = ExpressionType.Number;
+                            goto case ExpressionType.Number;
+                        }
+                        else
+                        {
+                            useDefaultTokenCreationMethod = true;
+                        }
+                        break;
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
                     case ExpressionType.DiceRoll:
                     case ExpressionType.LessThan:
                     case ExpressionType.GreaterThan:
                     case ExpressionType.Assignment:
-                        tokens.Add(new Token(type, expression.Substring(currentCharacter, 1), ExpressionPrecedence[type]));
+                        useDefaultTokenCreationMethod = true;
                         break;
+                }
+
+                if (useDefaultTokenCreationMethod)
+                {
+                    tokens.Add(new Token(type, expression.Substring(currentCharacter, 1), ExpressionPrecedence[type]));
                 }
             }
 
             return tokens;
+        }
+
+        private static bool isAnOperator(ExpressionType type)
+        {
+            return type != ExpressionType.Word && type != ExpressionType.Number && type != ExpressionType.Truth && type != ExpressionType.Variable;
         }
 
         private static int findEndOfNestingExpression(string expression, int startAt, char openingCharacter, char closingCharacter, bool canEscape = false, char escapeChar = '\\')
