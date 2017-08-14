@@ -21,7 +21,7 @@ namespace declang
             }
             catch(Exception e)
             {
-                throw e;
+                throw new Exception("Exception ocurred during execution", e);
             }
         }
     }

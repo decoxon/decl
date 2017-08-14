@@ -26,9 +26,24 @@ namespace declPrompt
             statement = getStatement();
             while (statement != "exit")
             {
-                executeStatement(statement);
+                try
+                {
+                    executeStatement(statement);
+                }
+                catch(Exception e)
+                {
+                    outputException(e);
+                }
                 statement = getStatement();
             }
+        }
+
+        private void outputException(Exception e)
+        {
+            Console.WriteLine("Exception Occurred");
+            Console.WriteLine("=====================");
+            Console.WriteLine(e.ToString());
+            Console.WriteLine("=====================");
         }
 
         private void executeStatement(string statement)
