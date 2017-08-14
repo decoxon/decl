@@ -19,6 +19,9 @@ namespace declang
         Number,
         Truth,
         Assignment,
-        Word
+        Word,
+        LessThan,
+        GreaterThan,
+        Ignore
     }
 }

@@ -12,7 +12,6 @@ namespace declang.Parsing
         /// </summary>
         public static Dictionary<ExpressionType, char[]> ExpressionCharacters = new Dictionary<ExpressionType, char[]>
         {
-            {ExpressionType.Number, new char[11] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'} },
             {ExpressionType.Variable, new char[53]
                 {
                     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
@@ -20,13 +19,17 @@ namespace declang.Parsing
                     '_'
                 }
             },
-            {ExpressionType.Addition,       new char[1]  {'+'} },
-            {ExpressionType.Subtraction,    new char[1]  {'-'} },
+            {ExpressionType.Number,         new char[11] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'} },
+            {ExpressionType.Word,           new char[2]  {'"', '"'} },
+            {ExpressionType.Parens,         new char[2]  {'(', ')'} },
             {ExpressionType.Multiplication, new char[1]  {'*'} },
             {ExpressionType.Division,       new char[1]  {'/'} },
+            {ExpressionType.Addition,       new char[1]  {'+'} },
+            {ExpressionType.Subtraction,    new char[1]  {'-'} },
+            {ExpressionType.LessThan,       new char[1]  {'<'} },
+            {ExpressionType.GreaterThan,    new char[1]  {'>'} },
             {ExpressionType.Assignment,     new char[1]  {'='} },
-            {ExpressionType.Parens,         new char[2]  {'(', ')'} },
-            {ExpressionType.Word,         new char[2]  {'"', '"'} }
+            {ExpressionType.Ignore,         new char[1]  {' '} }
         };
 
         private static char[] validIdentifierCharacters = new char[63]
@@ -52,7 +55,9 @@ namespace declang.Parsing
             {ExpressionType.DiceRoll,       3 },
             {ExpressionType.Addition,       2 },
             {ExpressionType.Subtraction,    2 },
-            {ExpressionType.Assignment,     1 },
+            {ExpressionType.LessThan,       1 },
+            {ExpressionType.GreaterThan,    1 },
+            {ExpressionType.Assignment,     0 },
         };
 
         /// <summary>
@@ -119,6 +124,14 @@ namespace declang.Parsing
                     return new DiceRoll(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.LessThan:
+                    return new LessThan(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.GreaterThan:
+                    return new GreaterThan(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.Assignment:
                     IExpression leftOperand = createExpressionTree(tokens.GetRange(0, selectedToken));
 
@@ -146,7 +159,7 @@ namespace declang.Parsing
             List<Token> tokens = new List<Token>();
             string tokenValue;
             int endOfToken;
-            int numDecimalPoints = 0;
+            int numDecimalPoints;
 
             for (int currentCharacter = 0; currentCharacter < expression.Length; currentCharacter++)
             {
@@ -162,6 +175,7 @@ namespace declang.Parsing
                     case ExpressionType.Number:
                         // Numbers can be multiple characters so we need to find the end of the number.
                         endOfToken = currentCharacter;
+                        numDecimalPoints = 0;
                         while (endOfToken < expression.Length && getCharacterType(expression[endOfToken]) == ExpressionType.Number)
                         {
                             // Count decimal points and throw exception if there are more than one.
@@ -249,6 +263,8 @@ namespace declang.Parsing
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
                     case ExpressionType.DiceRoll:
+                    case ExpressionType.LessThan:
+                    case ExpressionType.GreaterThan:
                     case ExpressionType.Assignment:
                         tokens.Add(new Token(type, expression.Substring(currentCharacter, 1), ExpressionPrecedence[type]));
                         break;
