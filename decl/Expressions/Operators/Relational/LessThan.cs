@@ -4,7 +4,7 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    class LessThan : BinaryOperator
+    internal class LessThan : BinaryOperator
     {
         public LessThan(IExpression leftOperand, IExpression rightOperand, string format = "{1}{0}{2}")
             : base(" < ", leftOperand, rightOperand, format) { }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    class Assignment : BinaryOperator
+    internal class Assignment : BinaryOperator
     {
         public Assignment(Variable leftOperand, IExpression rightOperand)
             : base(" = ", leftOperand, rightOperand)
