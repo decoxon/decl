@@ -28,6 +28,7 @@ namespace declang.Parsing
             {ExpressionType.Subtraction,    new char[1]  {'-'} },
             {ExpressionType.LessThan,       new char[1]  {'<'} },
             {ExpressionType.GreaterThan,    new char[1]  {'>'} },
+            {ExpressionType.Negation,       new char[1]  {'!'} },
             {ExpressionType.Assignment,     new char[1]  {'='} },
             {ExpressionType.Ignore,         new char[1]  {' '} }
         };
@@ -45,11 +46,12 @@ namespace declang.Parsing
         /// </summary>
         public static Dictionary<ExpressionType, int> ExpressionPrecedence = new Dictionary<ExpressionType, int>
         {
-            {ExpressionType.Variable,       4 },
-            {ExpressionType.Number,         4 },
-            {ExpressionType.Truth,          4 },
-            {ExpressionType.Word,           4 },
-            {ExpressionType.Parens,         4 },
+            {ExpressionType.Variable,       5 },
+            {ExpressionType.Number,         5 },
+            {ExpressionType.Truth,          5 },
+            {ExpressionType.Word,           5 },
+            {ExpressionType.Parens,         5 },
+            {ExpressionType.Negation,       4 },
             {ExpressionType.Multiplication, 3 },
             {ExpressionType.Division,       3 },
             {ExpressionType.DiceRoll,       3 },
@@ -57,6 +59,8 @@ namespace declang.Parsing
             {ExpressionType.Subtraction,    2 },
             {ExpressionType.LessThan,       1 },
             {ExpressionType.GreaterThan,    1 },
+            {ExpressionType.NotEqual,       1 },
+            {ExpressionType.Equal,          1 },
             {ExpressionType.Assignment,     0 },
         };
 
@@ -107,6 +111,8 @@ namespace declang.Parsing
                     return new Variable(tokens[selectedToken].Value);
                 case ExpressionType.Truth:
                     return new Truth(tokens[selectedToken].Value);
+                case ExpressionType.Word:
+                    return new Word(tokens[selectedToken].Value);
                 case ExpressionType.Parens:
                     return new Parens(createExpressionTree(tokeniseExpression(tokens[selectedToken].Value)));
                 case ExpressionType.Addition:
@@ -137,6 +143,16 @@ namespace declang.Parsing
                     return new GreaterThan(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.Equal:
+                    return new Equal(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.NotEqual:
+                    return new NotEqual(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.Negation:
+                    return new Negation(createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.Assignment:
                     IExpression leftOperand = createExpressionTree(tokens.GetRange(0, selectedToken));
 
@@ -217,7 +233,7 @@ namespace declang.Parsing
                         endOfToken = currentCharacter;
 
                         // Check for DiceRoll operator
-                        if ((expression[currentCharacter] == 'd' || expression[currentCharacter] == 'D') 
+                        if (expression.Length > currentCharacter + 1 && (expression[currentCharacter] == 'd' || expression[currentCharacter] == 'D')
                             && getCharacterType(expression[currentCharacter + 1]) == ExpressionType.Number)
                         {
                             tokenType = ExpressionType.DiceRoll;
@@ -239,12 +255,12 @@ namespace declang.Parsing
                             if (expression.Substring(currentCharacter, 4).Equals("true", StringComparison.CurrentCultureIgnoreCase))
                             {
                                 tokenValue = "true";
-                                endOfToken = currentCharacter + 4;
+                                endOfToken = currentCharacter + 3;
                             }
                             else
                             {
                                 tokenValue = "false";
-                                endOfToken = currentCharacter + 5;
+                                endOfToken = currentCharacter + 4;
                             }
                         }
                         else
@@ -261,17 +277,29 @@ namespace declang.Parsing
                         tokens.Add(new Token(tokenType, tokenValue, ExpressionPrecedence[tokenType]));
                         currentCharacter = endOfToken;
                         break;
+                    case ExpressionType.Word:
+                        int endOfString = findEndOfNestingExpression(expression, currentCharacter + 1, '"', '"', true);
+                        tokenValue = removeEscapeSequences(expression.Substring(currentCharacter + 1, endOfString - currentCharacter - 1));
+                        tokens.Add(new Token(type, tokenValue, ExpressionPrecedence[type]));
+                        currentCharacter = endOfString;
+                        break;
                     case ExpressionType.Parens:
                         int endOfParen = findEndOfNestingExpression(expression, currentCharacter + 1, '(', ')');
                         tokenValue = expression.Substring(currentCharacter + 1, endOfParen - currentCharacter - 1);
                         tokens.Add(new Token(type, tokenValue, ExpressionPrecedence[type]));
                         currentCharacter = endOfParen;
                         break;
-                    case ExpressionType.Word:
-                        int endOfString = findEndOfNestingExpression(expression, currentCharacter + 1, '"', '"', true);
-                        tokenValue = expression.Substring(currentCharacter + 1, endOfString - currentCharacter - 1);
-                        tokens.Add(new Token(type, tokenValue, ExpressionPrecedence[type]));
-                        currentCharacter = endOfString;
+                    case ExpressionType.Negation:
+                        // Check for NotEqual operator
+                        if(expression.Length >= currentCharacter && expression[currentCharacter + 1] == '=')
+                        {
+                            tokens.Add(new Token(ExpressionType.NotEqual, "!=", ExpressionPrecedence[ExpressionType.Negation]));
+                            currentCharacter++;
+                        }
+                        else
+                        {
+                            useDefaultTokenCreationMethod = true;
+                        }
                         break;
                     case ExpressionType.Addition:
                     case ExpressionType.Subtraction:
@@ -287,12 +315,23 @@ namespace declang.Parsing
                             useDefaultTokenCreationMethod = true;
                         }
                         break;
+                    case ExpressionType.Assignment:
+                        // Check for Equal operator
+                        if (expression.Length >= currentCharacter + 1 && expression[currentCharacter + 1] == '=')
+                        {
+                            tokens.Add(new Token(ExpressionType.Equal, "==", ExpressionPrecedence[ExpressionType.Equal]));
+                            currentCharacter++;
+                        }
+                        else
+                        {
+                            useDefaultTokenCreationMethod = true;
+                        }
+                        break;
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
                     case ExpressionType.DiceRoll:
                     case ExpressionType.LessThan:
                     case ExpressionType.GreaterThan:
-                    case ExpressionType.Assignment:
                         useDefaultTokenCreationMethod = true;
                         break;
                 }
@@ -304,6 +343,21 @@ namespace declang.Parsing
             }
 
             return tokens;
+        }
+
+        private static string removeEscapeSequences(string unescapeString)
+        {
+            string result = unescapeString;
+            for(int i=0; i < unescapeString.Length; i++)
+            {
+                if(unescapeString[i] == '\\')
+                {
+                    result = result.Remove(i, 1);
+                    i++;
+                }
+            }
+
+            return result;
         }
 
         private static bool isAnOperator(ExpressionType type)

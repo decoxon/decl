@@ -22,6 +22,9 @@ namespace declang
         Word,
         LessThan,
         GreaterThan,
-        Ignore
+        Ignore,
+        Negation,
+        NotEqual,
+        Equal
     }
 }
