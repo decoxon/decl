@@ -57,7 +57,7 @@ namespace declPrompt
                     outputContext();
                     break;
                 default:
-                    outputResult(decl.Evaluate(statement, context));
+                    outputResult(DECL.Evaluate(statement, context));
                     break;
             }
         }

@@ -22,7 +22,7 @@ namespace declPrompt
                 }
                 else if (!String.IsNullOrEmpty(Arguments.Statement))
                 {
-                    Console.WriteLine(decl.Evaluate(Arguments.Statement));
+                    Console.WriteLine(DECL.Evaluate(Arguments.Statement));
                 }
             }
         }

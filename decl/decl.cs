@@ -6,7 +6,7 @@ using declang.Expressions;
 
 namespace declang
 {
-    public static class decl
+    public static class DECL
     {
 
         public static ExpressionResult Evaluate (string expression, IDictionary<string, ExpressionResult> context = null)
@@ -24,5 +24,7 @@ namespace declang
                 throw new Exception("Exception ocurred during execution", e);
             }
         }
+
+
     }
 }
