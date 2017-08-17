@@ -16,9 +16,8 @@ namespace declang.Expressions
 
             if (left.Type == ExpressionType.Number && right.Type == ExpressionType.Number)
             {
-                string result = Decimal.Parse(left.Value) > Decimal.Parse(right.Value) ? "true" : "false";
-
-                return new ExpressionResult(ExpressionType.Truth, result);
+                result = new ExpressionResult(ExpressionType.Truth, (Decimal.Parse(left.Value) > Decimal.Parse(right.Value) ? "true" : "false"));
+                return result;
             }
 
             throw new Exception(String.Format("Cannot compare expressions of type {0} and {1}", left.Type.ToString(), right.Type.ToString()));

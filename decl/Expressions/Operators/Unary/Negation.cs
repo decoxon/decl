@@ -14,7 +14,8 @@ namespace declang.Expressions
 
             if(beforeNegation.Type == ExpressionType.Truth)
             {
-                return new ExpressionResult(ExpressionType.Truth, beforeNegation.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase) ? "false" : "true");
+                result = new ExpressionResult(ExpressionType.Truth, beforeNegation.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase) ? "false" : "true");
+                return result;
             }
 
             throw new Exception(String.Format("Cannot negate expression of type {0}", beforeNegation.Type));

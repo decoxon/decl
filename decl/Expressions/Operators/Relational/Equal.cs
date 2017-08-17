@@ -16,9 +16,8 @@ namespace declang.Expressions
 
             if (left.Type == right.Type)
             {
-                string result = left.Value.Equals(right.Value) ? "true" : "false";
-
-                return new ExpressionResult(ExpressionType.Truth, result);
+                result = new ExpressionResult(ExpressionType.Truth, (left.Value.Equals(right.Value) ? "true" : "false"));
+                return result;
             }
 
             throw new Exception(String.Format("Cannot compare expressions of type {0} and {1}", left.Type.ToString(), right.Type.ToString()));

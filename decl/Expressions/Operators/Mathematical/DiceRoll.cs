@@ -32,7 +32,8 @@ namespace declang.Expressions
                     result += die.Roll();
                 }
 
-                return new DiceRollResult(ExpressionType.Number, result.ToString(), dice);
+                this.result = new DiceRollResult(ExpressionType.Number, result.ToString(), dice);
+                return this.result;
             }
 
             throw new Exception(String.Format("Invalid dice operator operands {0} and {1}", LeftOperand.ToString(), RightOperand.ToString()));
