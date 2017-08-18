@@ -4,7 +4,7 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    class Variable : IExpression
+    class Variable : ValueExpression
     {
         private string variableName;
 
@@ -15,11 +15,12 @@ namespace declang.Expressions
             this.variableName = variableName;
         }
 
-        public ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
             if (context.ContainsKey(variableName))
             {
-                return context[variableName];
+                result = context[variableName];
+                return result;
             }
             else
             {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    class Truth : IExpression
+    class Truth : ValueExpression
     {
         bool value;
 
@@ -23,10 +23,11 @@ namespace declang.Expressions
                 throw new Exception(String.Format("Invalid truth value provided: {0}", value));
             }
         }
-
-        public ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        
+        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            return new ExpressionResult(ExpressionType.Truth, value ? "true" : "false");
+            result = new ExpressionResult(ExpressionType.Truth, value ? "true" : "false");
+            return result;
         }
     }
 }

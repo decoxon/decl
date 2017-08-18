@@ -9,15 +9,19 @@ namespace declang.Expressions
     internal class Parens : IExpression
     {
         private IExpression innerExpression;
+        private ExpressionResult result;
 
         public Parens(IExpression innerExpression)
         {
             this.innerExpression = innerExpression;
         }
 
+        public ExpressionResult Result => result;
+
         public ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            return innerExpression.Evaluate(context);
+            result = innerExpression.Evaluate(context);
+            return result;
         }
 
         public override string ToString()

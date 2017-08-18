@@ -4,7 +4,7 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    class Word : IExpression
+    class Word : ValueExpression
     {
         private string value;
 
@@ -13,9 +13,10 @@ namespace declang.Expressions
             this.value = value;
         }
 
-        ExpressionResult IExpression.Evaluate(IDictionary<string, ExpressionResult> context)
+        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            return new ExpressionResult(ExpressionType.Word, value);
+            result = new ExpressionResult(ExpressionType.Word, value);
+            return result;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    class Number : IExpression
+    class Number : ValueExpression
     {
         private decimal number;
 
@@ -16,9 +16,10 @@ namespace declang.Expressions
             }
         }
 
-        public ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            return new ExpressionResult(ExpressionType.Number, number.ToString());
+            result = new ExpressionResult(ExpressionType.Number, number.ToString());
+            return result;
         }
 
         public override string ToString()
