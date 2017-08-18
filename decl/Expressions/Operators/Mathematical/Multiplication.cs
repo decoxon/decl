@@ -5,8 +5,8 @@ namespace declang.Expressions
 {
     internal class Multiplication : BinaryOperator
     {
-        public Multiplication(IExpression leftOperand, IExpression rightOperand)
-            : base(" * ", leftOperand, rightOperand) {}
+        public Multiplication(IExpression leftOperand, IExpression rightOperand, string format = "{0} * {1}")
+            : base(leftOperand, rightOperand, format) { }
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {

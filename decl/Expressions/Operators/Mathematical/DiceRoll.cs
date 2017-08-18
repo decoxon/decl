@@ -9,8 +9,8 @@ namespace declang.Expressions
     {
         private List<Die> dice;
 
-        public DiceRoll(IExpression numberOfDice, IExpression numberOfSides)
-            : base("D", numberOfDice, numberOfSides)
+        public DiceRoll(IExpression numberOfDice, IExpression numberOfSides, string format = "{0}D{1}")
+            : base(numberOfDice, numberOfSides, format)
         {
             dice = new List<Die>();
         }

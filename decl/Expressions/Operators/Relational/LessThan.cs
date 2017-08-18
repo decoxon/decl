@@ -6,8 +6,8 @@ namespace declang.Expressions
 {
     internal class LessThan : BinaryOperator
     {
-        public LessThan(IExpression leftOperand, IExpression rightOperand, string format = "{1}{0}{2}")
-            : base(" < ", leftOperand, rightOperand, format) { }
+        public LessThan(IExpression leftOperand, IExpression rightOperand, string format = "{0} < {1}")
+            : base(leftOperand, rightOperand, format) { }
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {

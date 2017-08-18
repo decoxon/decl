@@ -6,8 +6,8 @@ namespace declang.Expressions
 {
     class Equal : BinaryOperator
     {
-        public Equal(IExpression leftOperand, IExpression rightOperand, string format = "{1}{0}{2}")
-            : base(" == ", leftOperand, rightOperand, format) { }
+        public Equal(IExpression leftOperand, IExpression rightOperand, string format = "{0} == {1}")
+            : base(leftOperand, rightOperand, format) { }
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {

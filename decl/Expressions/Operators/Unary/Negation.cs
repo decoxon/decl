@@ -6,7 +6,7 @@ namespace declang.Expressions
 {
     internal class Negation : UnaryOperator
     {
-        public Negation(IExpression operand, string format = "{0}{1}") : base(" !", operand, format) { }
+        public Negation(IExpression operand, string format = "!{0}") : base(operand, format) { }
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {

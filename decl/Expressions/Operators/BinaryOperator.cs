@@ -5,19 +5,22 @@ namespace declang.Expressions
 {
     internal abstract class BinaryOperator : Operator
     {
-        public IExpression LeftOperand { get; }
-        public IExpression RightOperand { get; }
+        protected IExpression leftOperand;
+        protected IExpression rightOperand;
 
-        public BinaryOperator(string operatorString, IExpression leftOperand, IExpression rightOperand, string format = "{1}{0}{2}") 
-            : base(operatorString, format)
+        public IExpression LeftOperand => leftOperand;
+        public IExpression RightOperand => rightOperand;
+
+        public BinaryOperator(IExpression leftOperand, IExpression rightOperand, string format = "{0}{1}") 
+            : base(format)
         {
-            LeftOperand = leftOperand;
-            RightOperand = rightOperand;
+            this.leftOperand = leftOperand;
+            this.rightOperand = rightOperand;
         }
 
         public override string ToString()
         {
-            return String.Format(format, operatorString, LeftOperand.ToString(), RightOperand.ToString());
+            return String.Format(format, LeftOperand.ToString(), RightOperand.ToString());
         }
     }
 }

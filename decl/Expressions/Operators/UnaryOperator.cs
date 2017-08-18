@@ -8,15 +8,15 @@ namespace declang.Expressions
     {
         public IExpression Operand { get; }
 
-        public UnaryOperator(string operatorString, IExpression operand, string format = "{0}{1}") 
-            : base(operatorString, format)
+        public UnaryOperator(IExpression operand, string format = "{0}") 
+            : base(format)
         {
             Operand = operand;
         }
 
         public override string ToString()
         {
-            return String.Format(format, operatorString, Operand.ToString());
+            return String.Format(format, Operand.ToString());
         }
     }
 }

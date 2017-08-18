@@ -7,12 +7,10 @@ namespace declang.Expressions
     internal abstract class Operator : IExpression
     {
         protected string format;
-        protected string operatorString;
         protected ExpressionResult result = null;
 
-        public Operator(string operatorString = "", string format = "")
+        public Operator(string format = "")
         {
-            this.operatorString = operatorString;
             this.format = format;
         }
 
