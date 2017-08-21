@@ -19,17 +19,12 @@ namespace declang
                 {
                     context = new Dictionary<string, ExpressionResult>();
                 }
-                return Parser.GetExpressionTree(expression).Evaluate(context);
+                return Parser.Parse(expression).Run(context);
             }
             catch (Exception e)
             {
                 throw new Exception("Exception ocurred during execution", e);
             }
-        }
-
-        private static ExpressionResult evaluateStatement(string statement, IDictionary<string, ExpressionResult> context)
-        {
-            return Parser.GetExpressionTree(statement).Evaluate(context);
         }
     }
 }
