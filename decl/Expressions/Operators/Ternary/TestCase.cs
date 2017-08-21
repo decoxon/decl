@@ -6,12 +6,41 @@ namespace declang.Expressions
 {
     internal class TestCase : TernaryOperator
     {
-        public TestCase(string operatorString, IExpression firstOperand, IExpression secondOperand, IExpression thirdOperand, string format = "{0}:{1}{{ {2} }}") 
-            : base(operatorString, firstOperand, secondOperand, thirdOperand, format) { }
+        public static string CURRENT_TEST_CASE_KEY = "currentTestCaseResult";
+
+        public TestCase(IExpression firstOperand, IExpression secondOperand, IExpression thirdOperand, string format = "{0}:{1}{{ {2} }}") 
+            : base(firstOperand, secondOperand, thirdOperand, format) { }
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            throw new NotImplementedException();
+            ExpressionResult iterationResult = FirstOperand.Evaluate(context);
+            if (Decimal.TryParse(iterationResult.Value, out decimal numIterations))
+            {
+                int numSuccesses = 0;
+                ExpressionResult currentCheckResult = null;
+
+                for (var i = 0; i < numIterations; i++)
+                {
+                    context[CURRENT_TEST_CASE_KEY] = SecondOperand.Evaluate(context);
+                    currentCheckResult = ThirdOperand.Evaluate(context);
+
+                    if(currentCheckResult.Type == ExpressionType.Truth && currentCheckResult.Value == "true")
+                    {
+                        numSuccesses++;
+                    }
+                }
+
+                result = new ExpressionResult(ExpressionType.Number, numSuccesses.ToString());
+
+                if (context.ContainsKey(CURRENT_TEST_CASE_KEY))
+                {
+                    context.Remove(CURRENT_TEST_CASE_KEY);
+                }
+
+                return result;
+            }
+
+            throw new Exception(String.Format("Invalid iteration expression in test case: {0}", iterationResult.Value));
         }
     }
 }

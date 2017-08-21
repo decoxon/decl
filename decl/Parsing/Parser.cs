@@ -30,7 +30,7 @@ namespace declang.Parsing
         /// <returns>The completed expression tree.</returns>
         private static IExpression createExpressionTree(List<Token> tokens)
         {
-            if(tokens.Count <= 0)
+            if (tokens.Count <= 0)
             {
                 return new Word("");
             }
@@ -107,11 +107,30 @@ namespace declang.Parsing
                     return new Assignment(
                         leftOperand as Variable,
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.TestCase:
+                    IExpression firstOperand = createExpressionTree(tokens.GetRange(0, selectedToken));
+
+                    int testCaseCheckLocation = selectedToken + 1;
+
+                    while (testCaseCheckLocation < tokens.Count && tokens[testCaseCheckLocation].Type != ExpressionType.TestCaseCheck)
+                    {
+                        testCaseCheckLocation++;
+                    }
+
+                    if (testCaseCheckLocation - selectedToken < 2 || tokens[testCaseCheckLocation].Type != ExpressionType.TestCaseCheck)
+                    {
+                        throw new Exception("No check or case found.");
+                    }
+
+                    IExpression secondOperand = createExpressionTree(tokens.GetRange(selectedToken + 1, testCaseCheckLocation - selectedToken - 1));
+                    IExpression thirdOperand = new TestCaseCheck(tokens[testCaseCheckLocation].Value);
+
+                    return new TestCase(firstOperand, secondOperand, thirdOperand);
                 default:
                     throw new Exception(String.Format("Unrecognised expression type '{0}'.", tokens[selectedToken].Type.ToString()));
             }
         }
 
-        
+
     }
 }

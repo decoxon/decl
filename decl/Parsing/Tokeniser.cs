@@ -29,7 +29,9 @@ namespace declang.Parsing
             {ExpressionType.GreaterThan,    new char[1]  {'>'} },
             {ExpressionType.Negation,       new char[1]  {'!'} },
             {ExpressionType.Assignment,     new char[1]  {'='} },
-            {ExpressionType.Ignore,         new char[1]  {' '} }
+            {ExpressionType.Ignore,         new char[1]  {' '} },
+            {ExpressionType.TestCase,       new char[1]  {':'} },
+            {ExpressionType.TestCaseCheck,  new char[1]  {'{'} },
         };
 
         private static char[] validIdentifierCharacters = new char[63]
@@ -56,10 +58,12 @@ namespace declang.Parsing
             {ExpressionType.DiceRoll,       3 },
             {ExpressionType.Addition,       2 },
             {ExpressionType.Subtraction,    2 },
+            {ExpressionType.TestCaseCheck,  2 },
             {ExpressionType.LessThan,       1 },
             {ExpressionType.GreaterThan,    1 },
             {ExpressionType.NotEqual,       1 },
             {ExpressionType.Equal,          1 },
+            {ExpressionType.TestCase,       1 },
             {ExpressionType.Assignment,     0 },
         };
 
@@ -221,6 +225,13 @@ namespace declang.Parsing
                             useDefaultTokenCreationMethod = true;
                         }
                         break;
+                    case ExpressionType.TestCaseCheck:
+                        endOfToken = findEndOfNestingExpression(expression, currentCharacter + 1, '{', '}');
+                        tokenValue = expression.Substring(currentCharacter + 1, endOfToken - currentCharacter - 1);
+                        tokens.Add(new Token(type, tokenValue, expressionPrecedence[type]));
+                        currentCharacter = endOfToken;
+                        break;
+                    case ExpressionType.TestCase:
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
                     case ExpressionType.DiceRoll:

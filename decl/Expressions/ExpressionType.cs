@@ -25,6 +25,8 @@ namespace declang
         Ignore,
         Negation,
         NotEqual,
-        Equal
+        Equal,
+        TestCase,
+        TestCaseCheck
     }
 }
