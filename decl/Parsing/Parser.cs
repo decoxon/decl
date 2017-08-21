@@ -1,7 +1,6 @@
 ﻿using declang.Expressions;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace declang.Parsing
 {

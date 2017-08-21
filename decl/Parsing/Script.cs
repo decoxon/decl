@@ -29,5 +29,10 @@ namespace declang.Parsing
 
             return finalResult;
         }
+
+        public bool IsSingleExpressionOfType<T>()
+        {
+            return expressions.Count == 1 && expressions[0] is T;
+        }
     }
 }

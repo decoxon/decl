@@ -50,13 +50,13 @@ namespace declang.Expressions
             {
                 try
                 {
-                    if(Parser.Parse(checkExpression) is ValueExpression)
+                    if(Parser.Parse(checkExpression).IsSingleExpressionOfType<ValueExpression>())
                     {
                         return currentCaseValue + "==" + checkExpression;
                     }
                 }
                 // Fall through to standard return if parsing goes wrong.
-                catch(Exception e) { }
+                catch(Exception e) {  }
 
                 return currentCaseValue + checkExpression;
             }
