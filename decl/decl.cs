@@ -19,7 +19,7 @@ namespace declang
                 {
                     context = new Dictionary<string, ExpressionResult>();
                 }
-                return Parser.GetExpressionTree(expression).Evaluate(context);
+                return Parser.Parse(expression).Run(context);
             }
             catch (Exception e)
             {

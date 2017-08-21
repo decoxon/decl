@@ -29,9 +29,9 @@ namespace declang.Parsing
             {ExpressionType.GreaterThan,    new char[1]  {'>'} },
             {ExpressionType.Negation,       new char[1]  {'!'} },
             {ExpressionType.Assignment,     new char[1]  {'='} },
-            {ExpressionType.Ignore,         new char[1]  {' '} },
             {ExpressionType.TestCase,       new char[1]  {':'} },
             {ExpressionType.TestCaseCheck,  new char[1]  {'{'} },
+            {ExpressionType.Ignore,         new char[2]  {' ', ';'} },
         };
 
         private static char[] validIdentifierCharacters = new char[63]
@@ -67,34 +67,50 @@ namespace declang.Parsing
             {ExpressionType.Assignment,     0 },
         };
 
+        private static List<Token> addExpressionToResult(List<List<Token>> result)
+        {
+            List<Token> newExpression = new List<Token>();
+            result.Add(newExpression);
+            return newExpression;
+        }
+
         /// <summary>
         /// Converts a string expression into a list of Tokens to be used by <see cref="createExpressionTree(List{Token})"/> 
         /// by looking at each character of the string in turn.
         /// </summary>
-        /// <param name="expression">The expression to be tokenised.</param>
+        /// <param name="script">The script to be tokenised.</param>
         /// <returns>The list of Tokens for the given expression.</returns>
-        public static List<Token> Tokenise(string expression)
+        public static List<List<Token>> Tokenise(string script)
         {
-            List<Token> tokens = new List<Token>();
+            List<List<Token>> result = new List<List<Token>>();
 
-            if (expression == null || expression.Length == 0)
+            if (String.IsNullOrEmpty(script))
             {
-                return tokens;
+                return result;
             }
+
+            // Add first line of resulting expression list
+            List<Token> tokens = addExpressionToResult(result);
 
             string tokenValue;
             int endOfToken;
             int numDecimalPoints;
             bool useDefaultTokenCreationMethod;
 
-            for (int currentCharacter = 0; currentCharacter < expression.Length; currentCharacter++)
+            for (int currentCharacter = 0; currentCharacter < script.Length; currentCharacter++)
             {
-                if (expression[currentCharacter] == ' ')
+                if (Char.IsWhiteSpace(script[currentCharacter]))
                 {
                     continue;
                 }
 
-                ExpressionType type = getCharacterType(expression[currentCharacter]);
+                if (script[currentCharacter] == ';')
+                {
+                    tokens = addExpressionToResult(result);
+                    continue;
+                }
+
+                ExpressionType type = getCharacterType(script[currentCharacter]);
                 useDefaultTokenCreationMethod = false;
 
                 switch (type)
@@ -103,26 +119,26 @@ namespace declang.Parsing
                         // Numbers can be multiple characters so we need to find the end of the number.
                         endOfToken = currentCharacter;
                         numDecimalPoints = 0;
-                        while (endOfToken < expression.Length
-                            && (getCharacterType(expression[endOfToken]) == ExpressionType.Number
-                                || (endOfToken == currentCharacter && (expression[endOfToken] == '-' || expression[endOfToken] == '+'))))
+                        while (endOfToken < script.Length
+                            && (getCharacterType(script[endOfToken]) == ExpressionType.Number
+                                || (endOfToken == currentCharacter && (script[endOfToken] == '-' || script[endOfToken] == '+'))))
                         {
                             // Count decimal points and throw exception if there are more than one.
-                            if (expression[endOfToken] == '.')
+                            if (script[endOfToken] == '.')
                             {
                                 numDecimalPoints++;
                             }
 
                             if (numDecimalPoints > 1)
                             {
-                                throw new Exception(String.Format("Too many decimal points in expression {0}.", expression));
+                                throw new Exception(String.Format("Too many decimal points in expression {0}.", script));
                             }
 
                             endOfToken++;
                         }
                         endOfToken--;
 
-                        tokenValue = expression.Substring(currentCharacter, endOfToken - currentCharacter + 1);
+                        tokenValue = script.Substring(currentCharacter, endOfToken - currentCharacter + 1);
                         tokens.Add(new Token(type, tokenValue, expressionPrecedence[type]));
                         currentCharacter = endOfToken;
                         break;
@@ -131,8 +147,8 @@ namespace declang.Parsing
                         endOfToken = currentCharacter;
 
                         // Check for DiceRoll operator
-                        if (expression.Length > currentCharacter + 1 && (expression[currentCharacter] == 'd' || expression[currentCharacter] == 'D')
-                            && getCharacterType(expression[currentCharacter + 1]) == ExpressionType.Number)
+                        if (script.Length > currentCharacter + 1 && (script[currentCharacter] == 'd' || script[currentCharacter] == 'D')
+                            && getCharacterType(script[currentCharacter + 1]) == ExpressionType.Number)
                         {
                             tokenType = ExpressionType.DiceRoll;
 
@@ -145,12 +161,12 @@ namespace declang.Parsing
                             }
                         }
                         // Check for truth value
-                        else if ((expression.Length >= currentCharacter + 4 && expression.Substring(currentCharacter, 4).Equals("true", StringComparison.CurrentCultureIgnoreCase))
-                            || (expression.Length >= currentCharacter + 5 && expression.Substring(currentCharacter, 5).Equals("false", StringComparison.CurrentCultureIgnoreCase)))
+                        else if ((script.Length >= currentCharacter + 4 && script.Substring(currentCharacter, 4).Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                            || (script.Length >= currentCharacter + 5 && script.Substring(currentCharacter, 5).Equals("false", StringComparison.CurrentCultureIgnoreCase)))
                         {
                             tokenType = ExpressionType.Truth;
 
-                            if (expression.Substring(currentCharacter, 4).Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                            if (script.Substring(currentCharacter, 4).Equals("true", StringComparison.CurrentCultureIgnoreCase))
                             {
                                 tokenValue = "true";
                                 endOfToken = currentCharacter + 3;
@@ -164,32 +180,32 @@ namespace declang.Parsing
                         else
                         {
                             // Identifiers can be multiple characters so we need to find the end of the identifier.
-                            while (endOfToken < expression.Length && isValidNonInitialIdentifierCharacter(expression[endOfToken]))
+                            while (endOfToken < script.Length && isValidNonInitialIdentifierCharacter(script[endOfToken]))
                             {
                                 endOfToken++;
                             }
                             endOfToken--;
                         }
 
-                        tokenValue = expression.Substring(currentCharacter, endOfToken - currentCharacter + 1);
+                        tokenValue = script.Substring(currentCharacter, endOfToken - currentCharacter + 1);
                         tokens.Add(new Token(tokenType, tokenValue, expressionPrecedence[tokenType]));
                         currentCharacter = endOfToken;
                         break;
                     case ExpressionType.Word:
-                        int endOfString = findEndOfNestingExpression(expression, currentCharacter + 1, '"', '"', true);
-                        tokenValue = removeEscapeSequences(expression.Substring(currentCharacter + 1, endOfString - currentCharacter - 1));
+                        int endOfString = findEndOfNestingExpression(script, currentCharacter + 1, '"', '"', true);
+                        tokenValue = removeEscapeSequences(script.Substring(currentCharacter + 1, endOfString - currentCharacter - 1));
                         tokens.Add(new Token(type, tokenValue, expressionPrecedence[type]));
                         currentCharacter = endOfString;
                         break;
                     case ExpressionType.Parens:
-                        int endOfParen = findEndOfNestingExpression(expression, currentCharacter + 1, '(', ')');
-                        tokenValue = expression.Substring(currentCharacter + 1, endOfParen - currentCharacter - 1);
+                        int endOfParen = findEndOfNestingExpression(script, currentCharacter + 1, '(', ')');
+                        tokenValue = script.Substring(currentCharacter + 1, endOfParen - currentCharacter - 1);
                         tokens.Add(new Token(type, tokenValue, expressionPrecedence[type]));
                         currentCharacter = endOfParen;
                         break;
                     case ExpressionType.Negation:
                         // Check for NotEqual operator
-                        if (expression.Length >= currentCharacter && expression[currentCharacter + 1] == '=')
+                        if (script.Length >= currentCharacter && script[currentCharacter + 1] == '=')
                         {
                             tokens.Add(new Token(ExpressionType.NotEqual, "!=", expressionPrecedence[ExpressionType.Negation]));
                             currentCharacter++;
@@ -215,7 +231,7 @@ namespace declang.Parsing
                         break;
                     case ExpressionType.Assignment:
                         // Check for Equal operator
-                        if (expression.Length >= currentCharacter + 1 && expression[currentCharacter + 1] == '=')
+                        if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
                         {
                             tokens.Add(new Token(ExpressionType.Equal, "==", expressionPrecedence[ExpressionType.Equal]));
                             currentCharacter++;
@@ -226,8 +242,8 @@ namespace declang.Parsing
                         }
                         break;
                     case ExpressionType.TestCaseCheck:
-                        endOfToken = findEndOfNestingExpression(expression, currentCharacter + 1, '{', '}');
-                        tokenValue = expression.Substring(currentCharacter + 1, endOfToken - currentCharacter - 1);
+                        endOfToken = findEndOfNestingExpression(script, currentCharacter + 1, '{', '}');
+                        tokenValue = script.Substring(currentCharacter + 1, endOfToken - currentCharacter - 1);
                         tokens.Add(new Token(type, tokenValue, expressionPrecedence[type]));
                         currentCharacter = endOfToken;
                         break;
@@ -243,11 +259,11 @@ namespace declang.Parsing
 
                 if (useDefaultTokenCreationMethod)
                 {
-                    tokens.Add(new Token(type, expression.Substring(currentCharacter, 1), expressionPrecedence[type]));
+                    tokens.Add(new Token(type, script.Substring(currentCharacter, 1), expressionPrecedence[type]));
                 }
             }
 
-            return tokens;
+            return result;
         }
 
         private static ExpressionType getCharacterType(char c)

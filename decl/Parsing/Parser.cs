@@ -12,14 +12,31 @@ namespace declang.Parsing
         /// </summary>
         /// <param name="expression">The expression to be parsed.</param>
         /// <returns>The completed expression tree.</returns>
-        public static IExpression GetExpressionTree(string expression)
+        public static Script Parse(string expression)
         {
             if (expression == null)
             {
                 throw new ArgumentNullException("expression");
             }
 
-            return createExpressionTree(Tokeniser.Tokenise(expression));
+            return new Script(createExpressionTrees(Tokeniser.Tokenise(expression)));
+        }
+
+        private static List<IExpression> createExpressionTrees(List<List<Token>> statements)
+        {
+            if (statements.Count <= 0)
+            {
+                return new List<IExpression>() { new Word("") };
+            }
+
+            List<IExpression> expressions = new List<IExpression>();
+
+            foreach (List<Token> statement in statements)
+            {
+                expressions.Add(createExpressionTree(statement));
+            }
+
+            return expressions;
         }
 
         /// <summary>
@@ -57,7 +74,19 @@ namespace declang.Parsing
                 case ExpressionType.Word:
                     return new Word(tokens[selectedToken].Value);
                 case ExpressionType.Parens:
-                    return new Parens(createExpressionTree(Tokeniser.Tokenise(tokens[selectedToken].Value)));
+                    List<List<Token>> innerExpression = Tokeniser.Tokenise(tokens[selectedToken].Value);
+
+                    if (innerExpression.Count <= 0)
+                    {
+                        throw new Exception(String.Format("Empty Parens expression"));
+                    }
+
+                    if (innerExpression.Count > 1)
+                    {
+                        throw new Exception(String.Format("Cannot have multiple statements in parentheses: {0}", tokens[selectedToken].Value));
+                    }
+
+                    return new Parens(createExpressionTree(innerExpression[0]));
                 case ExpressionType.Addition:
                     return new Addition(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),

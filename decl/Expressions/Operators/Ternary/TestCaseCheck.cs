@@ -28,7 +28,7 @@ namespace declang.Expressions
                 throw new Exception(String.Format("Test Case result must be a Number, not {0}", context[TestCase.CURRENT_TEST_CASE_KEY]));
             }
 
-            result = Parser.GetExpressionTree(composeExpression(context[TestCase.CURRENT_TEST_CASE_KEY].Value)).Evaluate(context);
+            result = Parser.Parse(composeExpression(context[TestCase.CURRENT_TEST_CASE_KEY].Value)).Run(context);
 
             if (result.Type != ExpressionType.Truth)
             {
@@ -50,7 +50,7 @@ namespace declang.Expressions
             {
                 try
                 {
-                    if(Parser.GetExpressionTree(checkExpression) is ValueExpression)
+                    if(Parser.Parse(checkExpression) is ValueExpression)
                     {
                         return currentCaseValue + "==" + checkExpression;
                     }
