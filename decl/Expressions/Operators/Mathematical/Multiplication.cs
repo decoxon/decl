@@ -19,7 +19,7 @@ namespace declang.Expressions
             {
                 if (Decimal.TryParse(leftOperand.Value, out decimal leftDecimal) && Decimal.TryParse(rightOperand.Value, out decimal rightDecimal))
                 {
-                    result = new ExpressionResult(ExpressionType.Number, (leftDecimal * rightDecimal).ToString());
+                    result = new ExpressionResult(ExpressionType.Number, (leftDecimal * rightDecimal).ToString(), new List<ExpressionResult>() { leftOperand, rightOperand });
                     return result;
                 }
             }

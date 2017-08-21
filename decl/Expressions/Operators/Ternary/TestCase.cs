@@ -18,6 +18,7 @@ namespace declang.Expressions
             {
                 int numSuccesses = 0;
                 ExpressionResult currentCheckResult = null;
+                List<ExpressionResult> componentResults = new List<ExpressionResult>();
 
                 for (var i = 0; i < numIterations; i++)
                 {
@@ -28,9 +29,11 @@ namespace declang.Expressions
                     {
                         numSuccesses++;
                     }
+
+                    componentResults.Add(currentCheckResult);
                 }
 
-                result = new ExpressionResult(ExpressionType.Number, numSuccesses.ToString());
+                result = new ExpressionResult(ExpressionType.Number, numSuccesses.ToString(), componentResults);
 
                 if (context.ContainsKey(CURRENT_TEST_CASE_KEY))
                 {

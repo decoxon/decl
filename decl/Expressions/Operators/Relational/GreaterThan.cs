@@ -16,7 +16,7 @@ namespace declang.Expressions
 
             if (left.Type == ExpressionType.Number && right.Type == ExpressionType.Number)
             {
-                result = new ExpressionResult(ExpressionType.Truth, (Decimal.Parse(left.Value) > Decimal.Parse(right.Value) ? "true" : "false"));
+                result = new ExpressionResult(ExpressionType.Truth, (Decimal.Parse(left.Value) > Decimal.Parse(right.Value) ? "true" : "false"), new List<ExpressionResult>() { left, right });
                 return result;
             }
 
