@@ -6,15 +6,18 @@ namespace declang.Expressions
 {
     class Truth : ValueExpression
     {
+        public const string TRUE = "true";
+        public const string FALSE = "false";
+
         bool value;
 
         public Truth(string value)
         {
-            if(value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+            if(value.Equals(TRUE, StringComparison.CurrentCultureIgnoreCase))
             {
                 this.value = true;
             }
-            else if (value.Equals("false", StringComparison.CurrentCultureIgnoreCase))
+            else if (value.Equals(FALSE, StringComparison.CurrentCultureIgnoreCase))
             {
                 this.value = false;
             }
@@ -26,7 +29,7 @@ namespace declang.Expressions
         
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            result = new ExpressionResult(ExpressionType.Truth, value ? "true" : "false");
+            result = new ExpressionResult(ExpressionType.Truth, value ? TRUE : FALSE);
             return result;
         }
     }
