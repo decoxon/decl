@@ -26,10 +26,5 @@ namespace declang
                 throw new Exception("Exception ocurred during execution", e);
             }
         }
-
-        private static ExpressionResult evaluateStatement(string statement, IDictionary<string, ExpressionResult> context)
-        {
-            return Parser.GetExpressionTree(statement).Evaluate(context);
-        }
     }
 }
