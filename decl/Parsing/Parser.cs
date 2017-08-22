@@ -102,6 +102,10 @@ namespace declang.Parsing
                     return new Division(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.Modulo:
+                    return new Modulo(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.DiceRoll:
                     return new DiceRoll(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
@@ -122,6 +126,30 @@ namespace declang.Parsing
                     return new NotEqual(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.And:
+                    return new And(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.Or:
+                    return new Or(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.GreaterThanOrEqual:
+                    return new Or(
+                        new GreaterThan(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))),
+                        new Equal(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))));
+                case ExpressionType.LessThanOrEqual:
+                    return new Or(
+                        new LessThan(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))),
+                        new Equal(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))));
                 case ExpressionType.Negation:
                     return new Negation(createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.Assignment:

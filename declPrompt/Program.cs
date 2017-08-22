@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using declang;
+using System.IO;
 
 
 namespace declPrompt
@@ -12,17 +13,28 @@ namespace declPrompt
     {
         static void Main(string[] args)
         {
-            Arguments Arguments = new Arguments();
-            if(CommandLine.Parser.Default.ParseArguments(args, Arguments))
+            Arguments arguments = new Arguments();
+            CommandLine.Parser parser = new CommandLine.Parser(with => with.MutuallyExclusive = true);
+
+            if(parser.ParseArguments(args, arguments))
             {
-                if (Arguments.IsInteractiveModeRequested)
+                if (arguments.IsInteractiveModeRequested)
                 {
                     InteractiveSession session = new InteractiveSession();
                     session.Start();
                 }
-                else if (!String.IsNullOrEmpty(Arguments.Statement))
+                else if (!String.IsNullOrEmpty(arguments.FilePath))
                 {
-                    Console.WriteLine(DECL.Evaluate(Arguments.Statement));
+                    if (!File.Exists(arguments.FilePath))
+                    {
+                        Console.WriteLine(String.Format("No file at this location: {0}", arguments.FilePath));
+                    }
+
+                    Console.WriteLine(DECL.Evaluate(File.ReadAllText(arguments.FilePath)));
+                }
+                else if (!String.IsNullOrEmpty(arguments.Statement))
+                {
+                    Console.WriteLine(DECL.Evaluate(arguments.Statement));
                 }
             }
         }

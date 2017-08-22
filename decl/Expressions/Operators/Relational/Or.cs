@@ -4,9 +4,9 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    internal class Equal : BinaryOperator
+    internal class Or : BinaryOperator
     {
-        public Equal(IExpression leftOperand, IExpression rightOperand, string format = "{0} == {1}")
+        public Or(IExpression leftOperand, IExpression rightOperand, string format = "{0} || {1}")
             : base(leftOperand, rightOperand, format) { }
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
@@ -14,9 +14,9 @@ namespace declang.Expressions
             ExpressionResult left = LeftOperand.Evaluate(context);
             ExpressionResult right = RightOperand.Evaluate(context);
 
-            if (left.Type == right.Type)
+            if (left.Type == ExpressionType.Truth && right.Type == ExpressionType.Truth)
             {
-                result = new ExpressionResult(ExpressionType.Truth, (left.Value.Equals(right.Value) ? "true" : "false"), new List<ExpressionResult>() { left, right });
+                result = new ExpressionResult(ExpressionType.Truth, (left.Value.Equals(Truth.TRUE) || right.Value.Equals(Truth.TRUE)) ? Truth.TRUE : Truth.FALSE, new List<ExpressionResult>() { left, right });
                 return result;
             }
 
