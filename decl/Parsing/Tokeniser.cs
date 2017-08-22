@@ -106,8 +106,11 @@ namespace declang.Parsing
 
                 if (script[currentCharacter] == ';')
                 {
-                    tokens = addExpressionToResult(result);
-                    continue;
+                    if (currentCharacter < script.Length)
+                    {
+                        tokens = addExpressionToResult(result);
+                        continue;
+                    }
                 }
 
                 ExpressionType type = getCharacterType(script[currentCharacter]);
@@ -261,6 +264,13 @@ namespace declang.Parsing
                 {
                     tokens.Add(new Token(type, script.Substring(currentCharacter, 1), expressionPrecedence[type]));
                 }
+            }
+
+            // We may end up with a blank final expression if there was extra 
+            // whitespace after the last statement of the script.
+            if(result.Count > 0 && result[result.Count - 1].Count == 0)
+            {
+                result.RemoveAt(result.Count - 1);
             }
 
             return result;
