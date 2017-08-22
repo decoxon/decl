@@ -153,9 +153,9 @@ namespace declang.Parsing
                             tokenType = ExpressionType.DiceRoll;
 
                             // To allow users to say "d6" instead of having to type out "1d6", we'll add a 1 when
-                            // there isn't a number present before the D operator because it is a binary operator and
-                            // therefore requires two operands.
-                            if (tokens.Count == 0 || tokens[tokens.Count - 1].Type != ExpressionType.Number)
+                            // there isn't a number (or a variable which could become a number) present before the 
+                            // D operator because it is a binary operator and therefore requires two operands.
+                            if (tokens.Count == 0 || (tokens[tokens.Count - 1].Type != ExpressionType.Number && tokens[tokens.Count - 1].Type != ExpressionType.Variable))
                             {
                                 tokens.Add(new Token(ExpressionType.Number, "1", expressionPrecedence[ExpressionType.Number]));
                             }
