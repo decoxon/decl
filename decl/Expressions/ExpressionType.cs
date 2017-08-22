@@ -29,6 +29,8 @@ namespace declang
         TestCase,
         TestCaseCheck,
         Or,
-        And
+        And,
+        GreaterThanOrEqual,
+        LessThanOrEqual
     }
 }

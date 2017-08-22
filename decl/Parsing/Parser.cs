@@ -130,6 +130,22 @@ namespace declang.Parsing
                     return new Or(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
+                case ExpressionType.GreaterThanOrEqual:
+                    return new Or(
+                        new GreaterThan(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))),
+                        new Equal(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))));
+                case ExpressionType.LessThanOrEqual:
+                    return new Or(
+                        new LessThan(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))),
+                        new Equal(
+                            createExpressionTree(tokens.GetRange(0, selectedToken)),
+                            createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken))));
                 case ExpressionType.Negation:
                     return new Negation(createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.Assignment:

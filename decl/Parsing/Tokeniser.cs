@@ -8,27 +8,29 @@ namespace declang.Parsing
     {
         private static Dictionary<ExpressionType, ExpressionDefinition> expressionDefs = new Dictionary<ExpressionType, ExpressionDefinition>
         {
-            {ExpressionType.Variable,       new ExpressionDefinition { Type = ExpressionType.Variable,       Precedence = 5, TriggerCharacters = new char[53] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','_' } } },
-            {ExpressionType.Number,         new ExpressionDefinition { Type = ExpressionType.Number,         Precedence = 5, TriggerCharacters = new char[11] {  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' } } },
-            {ExpressionType.Truth,          new ExpressionDefinition { Type = ExpressionType.Truth,          Precedence = 5, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.Word,           new ExpressionDefinition { Type = ExpressionType.Word,           Precedence = 5, TriggerCharacters = new char[2] { '"', '"' } } },
-            {ExpressionType.Parens,         new ExpressionDefinition { Type = ExpressionType.Parens,         Precedence = 5, TriggerCharacters = new char[2] { '(', ')' } } },
-            {ExpressionType.Negation,       new ExpressionDefinition { Type = ExpressionType.Negation,       Precedence = 4, TriggerCharacters = new char[1] { '!' } } },
-            {ExpressionType.Multiplication, new ExpressionDefinition { Type = ExpressionType.Multiplication, Precedence = 3, TriggerCharacters = new char[1] { '*' } } },
-            {ExpressionType.Division,       new ExpressionDefinition { Type = ExpressionType.Division,       Precedence = 3, TriggerCharacters = new char[1] { '/' } } },
-            {ExpressionType.DiceRoll,       new ExpressionDefinition { Type = ExpressionType.DiceRoll,       Precedence = 3, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.Addition,       new ExpressionDefinition { Type = ExpressionType.Addition,       Precedence = 2, TriggerCharacters = new char[1] { '+' } } },
-            {ExpressionType.Subtraction,    new ExpressionDefinition { Type = ExpressionType.Subtraction,    Precedence = 2, TriggerCharacters = new char[1] { '-' } } },
-            {ExpressionType.TestCaseCheck,  new ExpressionDefinition { Type = ExpressionType.TestCaseCheck,  Precedence = 2, TriggerCharacters = new char[1] { '{' } } },
-            {ExpressionType.LessThan,       new ExpressionDefinition { Type = ExpressionType.LessThan,       Precedence = 1, TriggerCharacters = new char[1] { '<' } } },
-            {ExpressionType.GreaterThan,    new ExpressionDefinition { Type = ExpressionType.GreaterThan,    Precedence = 1, TriggerCharacters = new char[1] { '>' } } },
-            {ExpressionType.NotEqual,       new ExpressionDefinition { Type = ExpressionType.NotEqual,       Precedence = 1, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.Equal,          new ExpressionDefinition { Type = ExpressionType.Equal,          Precedence = 1, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.And,            new ExpressionDefinition { Type = ExpressionType.And,            Precedence = 1, TriggerCharacters = new char[1] { '&' } } },
-            {ExpressionType.Or,             new ExpressionDefinition { Type = ExpressionType.Or,             Precedence = 1, TriggerCharacters = new char[1] { '|' } } },
-            {ExpressionType.TestCase,       new ExpressionDefinition { Type = ExpressionType.TestCase,       Precedence = 1, TriggerCharacters = new char[1] { ':' } } },
-            {ExpressionType.Assignment,     new ExpressionDefinition { Type = ExpressionType.Assignment,     Precedence = 0, TriggerCharacters = new char[1] { '=' } } },
-            {ExpressionType.Ignore,         new ExpressionDefinition { Type = ExpressionType.Ignore,         Precedence = 9, TriggerCharacters = new char[2] { ' ', ';' } } },
+            {ExpressionType.Variable,           new ExpressionDefinition { Type = ExpressionType.Variable,              Precedence = 5, TriggerCharacters = new char[53] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','_' } } },
+            {ExpressionType.Number,             new ExpressionDefinition { Type = ExpressionType.Number,                Precedence = 5, TriggerCharacters = new char[11] {  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' } } },
+            {ExpressionType.Truth,              new ExpressionDefinition { Type = ExpressionType.Truth,                 Precedence = 5, TriggerCharacters = new char[0] {  } } },
+            {ExpressionType.Word,               new ExpressionDefinition { Type = ExpressionType.Word,                  Precedence = 5, TriggerCharacters = new char[2] { '"', '"' } } },
+            {ExpressionType.Parens,             new ExpressionDefinition { Type = ExpressionType.Parens,                Precedence = 5, TriggerCharacters = new char[2] { '(', ')' } } },
+            {ExpressionType.Negation,           new ExpressionDefinition { Type = ExpressionType.Negation,              Precedence = 4, TriggerCharacters = new char[1] { '!' } } },
+            {ExpressionType.Multiplication,     new ExpressionDefinition { Type = ExpressionType.Multiplication,        Precedence = 3, TriggerCharacters = new char[1] { '*' } } },
+            {ExpressionType.Division,           new ExpressionDefinition { Type = ExpressionType.Division,              Precedence = 3, TriggerCharacters = new char[1] { '/' } } },
+            {ExpressionType.DiceRoll,           new ExpressionDefinition { Type = ExpressionType.DiceRoll,              Precedence = 3, TriggerCharacters = new char[0] {  } } },
+            {ExpressionType.Addition,           new ExpressionDefinition { Type = ExpressionType.Addition,              Precedence = 2, TriggerCharacters = new char[1] { '+' } } },
+            {ExpressionType.Subtraction,        new ExpressionDefinition { Type = ExpressionType.Subtraction,           Precedence = 2, TriggerCharacters = new char[1] { '-' } } },
+            {ExpressionType.TestCaseCheck,      new ExpressionDefinition { Type = ExpressionType.TestCaseCheck,         Precedence = 2, TriggerCharacters = new char[1] { '{' } } },
+            {ExpressionType.LessThan,           new ExpressionDefinition { Type = ExpressionType.LessThan,              Precedence = 1, TriggerCharacters = new char[1] { '<' } } },
+            {ExpressionType.GreaterThan,        new ExpressionDefinition { Type = ExpressionType.GreaterThan,           Precedence = 1, TriggerCharacters = new char[1] { '>' } } },
+            {ExpressionType.LessThanOrEqual,    new ExpressionDefinition { Type = ExpressionType.LessThanOrEqual,       Precedence = 1, TriggerCharacters = new char[0] {  } } },
+            {ExpressionType.GreaterThanOrEqual, new ExpressionDefinition { Type = ExpressionType.GreaterThanOrEqual,    Precedence = 1, TriggerCharacters = new char[0] {  } } },
+            {ExpressionType.NotEqual,           new ExpressionDefinition { Type = ExpressionType.NotEqual,              Precedence = 1, TriggerCharacters = new char[0] {  } } },
+            {ExpressionType.Equal,              new ExpressionDefinition { Type = ExpressionType.Equal,                 Precedence = 1, TriggerCharacters = new char[0] {  } } },
+            {ExpressionType.And,                new ExpressionDefinition { Type = ExpressionType.And,                   Precedence = 1, TriggerCharacters = new char[1] { '&' } } },
+            {ExpressionType.Or,                 new ExpressionDefinition { Type = ExpressionType.Or,                    Precedence = 1, TriggerCharacters = new char[1] { '|' } } },
+            {ExpressionType.TestCase,           new ExpressionDefinition { Type = ExpressionType.TestCase,              Precedence = 1, TriggerCharacters = new char[1] { ':' } } },
+            {ExpressionType.Assignment,         new ExpressionDefinition { Type = ExpressionType.Assignment,            Precedence = 0, TriggerCharacters = new char[1] { '=' } } },
+            {ExpressionType.Ignore,             new ExpressionDefinition { Type = ExpressionType.Ignore,                Precedence = 9, TriggerCharacters = new char[2] { ' ', ';' } } },
         };
 
         private static char[] validIdentifierCharacters = new char[63]
@@ -224,12 +226,32 @@ namespace declang.Parsing
                         tokens.Add(new Token(type, script.Substring(currentCharacter, 2), expressionDefs[type].Precedence));
                         currentCharacter++;
                         break;
+                    case ExpressionType.LessThan:
+                        if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
+                        {
+                            tokens.Add(new Token(ExpressionType.LessThanOrEqual, "<=", expressionDefs[ExpressionType.LessThanOrEqual].Precedence));
+                        }
+                        else
+                        {
+                            useDefaultTokenCreationMethod = true;
+                        }
+                        currentCharacter++;
+                        break;
+                    case ExpressionType.GreaterThan:
+                        if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
+                        {
+                            tokens.Add(new Token(ExpressionType.GreaterThanOrEqual, ">=", expressionDefs[ExpressionType.GreaterThanOrEqual].Precedence));
+                        }
+                        else
+                        {
+                            useDefaultTokenCreationMethod = true;
+                        }
+                        currentCharacter++;
+                        break;
                     case ExpressionType.TestCase:
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
                     case ExpressionType.DiceRoll:
-                    case ExpressionType.LessThan:
-                    case ExpressionType.GreaterThan:
                         useDefaultTokenCreationMethod = true;
                         break;
                 }
