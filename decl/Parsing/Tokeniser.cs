@@ -24,6 +24,8 @@ namespace declang.Parsing
             {ExpressionType.GreaterThan,    new ExpressionDefinition { Type = ExpressionType.GreaterThan,    Precedence = 1, TriggerCharacters = new char[1] { '>' } } },
             {ExpressionType.NotEqual,       new ExpressionDefinition { Type = ExpressionType.NotEqual,       Precedence = 1, TriggerCharacters = new char[0] {  } } },
             {ExpressionType.Equal,          new ExpressionDefinition { Type = ExpressionType.Equal,          Precedence = 1, TriggerCharacters = new char[0] {  } } },
+            {ExpressionType.And,            new ExpressionDefinition { Type = ExpressionType.And,            Precedence = 1, TriggerCharacters = new char[1] { '&' } } },
+            {ExpressionType.Or,             new ExpressionDefinition { Type = ExpressionType.Or,             Precedence = 1, TriggerCharacters = new char[1] { '|' } } },
             {ExpressionType.TestCase,       new ExpressionDefinition { Type = ExpressionType.TestCase,       Precedence = 1, TriggerCharacters = new char[1] { ':' } } },
             {ExpressionType.Assignment,     new ExpressionDefinition { Type = ExpressionType.Assignment,     Precedence = 0, TriggerCharacters = new char[1] { '=' } } },
             {ExpressionType.Ignore,         new ExpressionDefinition { Type = ExpressionType.Ignore,         Precedence = 9, TriggerCharacters = new char[2] { ' ', ';' } } },
@@ -212,6 +214,15 @@ namespace declang.Parsing
                         tokenValue = script.Substring(currentCharacter + 1, endOfToken - currentCharacter - 1);
                         tokens.Add(new Token(type, tokenValue, expressionDefs[type].Precedence));
                         currentCharacter = endOfToken;
+                        break;
+                    case ExpressionType.And:
+                    case ExpressionType.Or:
+                        if(currentCharacter + 1 > script.Length || script[currentCharacter + 1] != script[currentCharacter])
+                        {
+                            throw new Exception(String.Format("Second \"{0}\" expected", script[currentCharacter]));
+                        }
+                        tokens.Add(new Token(type, script.Substring(currentCharacter, 2), expressionDefs[type].Precedence));
+                        currentCharacter++;
                         break;
                     case ExpressionType.TestCase:
                     case ExpressionType.Multiplication:

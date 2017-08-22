@@ -27,6 +27,8 @@ namespace declang
         NotEqual,
         Equal,
         TestCase,
-        TestCaseCheck
+        TestCaseCheck,
+        Or,
+        And
     }
 }
