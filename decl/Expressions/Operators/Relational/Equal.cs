@@ -4,7 +4,7 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    class Equal : BinaryOperator
+    internal class Equal : BinaryOperator
     {
         public Equal(IExpression leftOperand, IExpression rightOperand, string format = "{0} == {1}")
             : base(leftOperand, rightOperand, format) { }
