@@ -31,6 +31,7 @@ namespace declang
         Or,
         And,
         GreaterThanOrEqual,
-        LessThanOrEqual
+        LessThanOrEqual,
+        Modulo
     }
 }

@@ -16,6 +16,7 @@ namespace declang.Parsing
             {ExpressionType.Negation,           new ExpressionDefinition { Type = ExpressionType.Negation,              Precedence = 4, TriggerCharacters = new char[1] { '!' } } },
             {ExpressionType.Multiplication,     new ExpressionDefinition { Type = ExpressionType.Multiplication,        Precedence = 3, TriggerCharacters = new char[1] { '*' } } },
             {ExpressionType.Division,           new ExpressionDefinition { Type = ExpressionType.Division,              Precedence = 3, TriggerCharacters = new char[1] { '/' } } },
+            {ExpressionType.Modulo,             new ExpressionDefinition { Type = ExpressionType.Modulo,                Precedence = 3, TriggerCharacters = new char[1] { '%' } } },
             {ExpressionType.DiceRoll,           new ExpressionDefinition { Type = ExpressionType.DiceRoll,              Precedence = 3, TriggerCharacters = new char[0] {  } } },
             {ExpressionType.Addition,           new ExpressionDefinition { Type = ExpressionType.Addition,              Precedence = 2, TriggerCharacters = new char[1] { '+' } } },
             {ExpressionType.Subtraction,        new ExpressionDefinition { Type = ExpressionType.Subtraction,           Precedence = 2, TriggerCharacters = new char[1] { '-' } } },
@@ -251,6 +252,7 @@ namespace declang.Parsing
                     case ExpressionType.TestCase:
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
+                    case ExpressionType.Modulo:
                     case ExpressionType.DiceRoll:
                         useDefaultTokenCreationMethod = true;
                         break;
