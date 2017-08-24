@@ -231,23 +231,23 @@ namespace declang.Parsing
                         if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
                         {
                             tokens.Add(new Token(ExpressionType.LessThanOrEqual, "<=", expressionDefs[ExpressionType.LessThanOrEqual].Precedence));
+                            currentCharacter++;
                         }
                         else
                         {
                             useDefaultTokenCreationMethod = true;
                         }
-                        currentCharacter++;
                         break;
                     case ExpressionType.GreaterThan:
                         if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
                         {
                             tokens.Add(new Token(ExpressionType.GreaterThanOrEqual, ">=", expressionDefs[ExpressionType.GreaterThanOrEqual].Precedence));
+                            currentCharacter++;
                         }
                         else
                         {
                             useDefaultTokenCreationMethod = true;
                         }
-                        currentCharacter++;
                         break;
                     case ExpressionType.TestCase:
                     case ExpressionType.Multiplication:

@@ -22,7 +22,9 @@ namespace declang.Expressions
 
                 for (var i = 0; i < numIterations; i++)
                 {
+                    ExpressionResult secondResult = 
                     context[CURRENT_TEST_CASE_KEY] = SecondOperand.Evaluate(context);
+                    componentResults.Add(secondResult);
                     currentCheckResult = ThirdOperand.Evaluate(context);
 
                     if(currentCheckResult.Type == ExpressionType.Truth && currentCheckResult.Value == "true")
@@ -33,7 +35,7 @@ namespace declang.Expressions
                     componentResults.Add(currentCheckResult);
                 }
 
-                result = new ExpressionResult(ExpressionType.Number, numSuccesses.ToString(), componentResults);
+                result = new ExpressionResult(this.GetType().Name, ExpressionType.Number, numSuccesses.ToString(), componentResults);
 
                 if (context.ContainsKey(CURRENT_TEST_CASE_KEY))
                 {

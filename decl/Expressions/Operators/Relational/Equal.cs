@@ -16,7 +16,7 @@ namespace declang.Expressions
 
             if (left.Type == right.Type)
             {
-                result = new ExpressionResult(ExpressionType.Truth, (left.Value.Equals(right.Value) ? "true" : "false"), new List<ExpressionResult>() { left, right });
+                result = new ExpressionResult(this.GetType().Name, ExpressionType.Truth, (left.Value.Equals(right.Value) ? "true" : "false"), new List<ExpressionResult>() { left, right });
                 return result;
             }
 

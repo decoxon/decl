@@ -15,7 +15,7 @@ namespace declang.Expressions
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            result = new ExpressionResult(ExpressionType.Word, value);
+            result = new ExpressionResult(this.GetType().Name, ExpressionType.Word, value);
             return result;
         }
     }

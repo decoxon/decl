@@ -11,6 +11,7 @@ namespace declPrompt
     class InteractiveSession
     {
         private IDictionary<string, ExpressionResult> context;
+        private bool outputDetail = false;
 
         public InteractiveSession(IDictionary<string, ExpressionResult> context = null)
         {
@@ -56,6 +57,10 @@ namespace declPrompt
                 case "context":
                     outputContext();
                     break;
+                case "toggle detail":
+                    outputDetail = !outputDetail;
+                    Console.WriteLine("<<< Detail output " + (outputDetail ? "on" : "off"));
+                    break;
                 default:
                     outputResult(DECL.Evaluate(statement, context));
                     break;
@@ -66,6 +71,10 @@ namespace declPrompt
         {
             Console.Write("<<<");
             Console.WriteLine(result);
+            if (outputDetail)
+            {
+                outputResultTree(result);
+            }
         }
 
         private void outputContext()
@@ -81,6 +90,12 @@ namespace declPrompt
         {
             Console.Write(">>>");
             return Console.ReadLine();
+        }
+
+        private void outputResultTree(ExpressionResult result)
+        {
+            Console.WriteLine("<<< Result Tree:");
+            Console.WriteLine(result.ToResultDetailString());
         }
     }
 }

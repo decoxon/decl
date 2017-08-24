@@ -20,7 +20,7 @@ namespace declang.Expressions
             if (context.ContainsKey(variableName))
             {
                 result = context[variableName];
-                return result;
+                return new ExpressionResult(this.GetType().Name, result.Type, result.Value, new List<ExpressionResult> { result });
             }
             else
             {

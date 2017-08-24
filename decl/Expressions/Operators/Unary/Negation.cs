@@ -14,7 +14,7 @@ namespace declang.Expressions
 
             if(beforeNegation.Type == ExpressionType.Truth)
             {
-                result = new ExpressionResult(ExpressionType.Truth, beforeNegation.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase) ? "false" : "true", new List<ExpressionResult>() { beforeNegation });
+                result = new ExpressionResult(this.GetType().Name, ExpressionType.Truth, beforeNegation.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase) ? "false" : "true", new List<ExpressionResult>() { beforeNegation });
                 return result;
             }
 

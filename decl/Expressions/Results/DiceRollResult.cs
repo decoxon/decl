@@ -12,9 +12,28 @@ namespace declang
 
         public List<Die> Dice => dice;
 
-        public DiceRollResult(ExpressionType type, string value, List<Die> dice, IEnumerable<ExpressionResult> componentResults = null) : base(type, value, componentResults)
+        public DiceRollResult(string operationType, ExpressionType type, string value, List<Die> dice, IEnumerable<ExpressionResult> componentResults = null) 
+            : base(operationType, type, value, componentResults)
         {
             this.dice = dice;
         }
-    }
+
+        public override string ToResultDetailString(int depth = 0)
+        {
+            string spacing = GetSpacingString(depth);
+            StringBuilder detailString = GetBasicValueStringBuilder(spacing);
+            
+            foreach(Die die in dice)
+            {
+                detailString.Append(spacing);
+                detailString.Append("(");
+                detailString.Append(die.ToString());
+                detailString.AppendLine(")");
+            }
+
+            AddComponentResultDetailStrings(detailString, depth + 1);
+
+            return detailString.ToString();
+        }
+    } 
 }

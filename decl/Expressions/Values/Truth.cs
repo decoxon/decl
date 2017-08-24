@@ -29,7 +29,7 @@ namespace declang.Expressions
         
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
-            result = new ExpressionResult(ExpressionType.Truth, value ? TRUE : FALSE);
+            result = new ExpressionResult(this.GetType().Name, ExpressionType.Truth, value ? TRUE : FALSE);
             return result;
         }
     }

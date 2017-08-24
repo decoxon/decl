@@ -11,12 +11,11 @@ namespace declang.Expressions
 
         public DiceRoll(IExpression numberOfDice, IExpression numberOfSides, string format = "{0}D{1}")
             : base(numberOfDice, numberOfSides, format)
-        {
-            dice = new List<Die>();
-        }
+        { }
 
         public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
         {
+            dice = new List<Die>();
             ExpressionResult left = LeftOperand.Evaluate(context);
             ExpressionResult right = RightOperand.Evaluate(context);
 
@@ -35,7 +34,7 @@ namespace declang.Expressions
                     result += die.Roll();
                 }
 
-                this.result = new DiceRollResult(ExpressionType.Number, result.ToString(), dice, new List<ExpressionResult>() { left, right });
+                this.result = new DiceRollResult(this.GetType().Name, ExpressionType.Number, result.ToString(), dice, new List<ExpressionResult>() { left, right });
                 return this.result;
             }
 

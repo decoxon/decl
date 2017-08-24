@@ -13,7 +13,7 @@ namespace declang.Expressions
         {
             result = RightOperand.Evaluate(context);
             context[((Variable)LeftOperand).Name] = result;
-            return result;
+            return new ExpressionResult(this.GetType().Name, result.Type, result.Value, new List<ExpressionResult> { result });
         }
     }
 }

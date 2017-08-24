@@ -35,7 +35,7 @@ namespace declang.Expressions
                 throw new Exception(String.Format("Check must evaluate to Truth value, not {0}", result.Type.ToString()));
             }
 
-            return result;
+            return new ExpressionResult(this.GetType().Name, ExpressionType.Truth, result.Value, new List<ExpressionResult> { result });
         }
 
         private string composeExpression(string currentCaseValue)
