@@ -5,24 +5,24 @@ using declang.Expressions;
 
 namespace declang
 {
-    public class ExpressionResult
+    public class ExpressionResult : IExpressionResult
     {
         private string operationType;
         private ExpressionType type;
         private string value;
-        private IEnumerable<ExpressionResult> componentResults;
+        private IEnumerable<IExpressionResult> componentResults;
 
         public string OperationType => operationType;
         public ExpressionType Type => type;
-        public string Value => value;
-        public IEnumerable<ExpressionResult> ComponentResults => componentResults;
+        public virtual string Value => value;
+        public IEnumerable<IExpressionResult> ComponentResults => componentResults;
 
-        public ExpressionResult(string operationType, ExpressionType type, string value, IEnumerable<ExpressionResult> componentResults = null)
+        public ExpressionResult(string operationType, ExpressionType type, string value, IEnumerable<IExpressionResult> componentResults = null)
         {
             this.operationType = operationType;
             this.type = type;
             this.value = value;
-            this.componentResults = componentResults ?? new List<ExpressionResult>();
+            this.componentResults = componentResults ?? new List<IExpressionResult>();
         }
 
         public override string ToString()

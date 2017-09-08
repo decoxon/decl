@@ -9,14 +9,14 @@ namespace declang.Expressions
         public NotEqual(IExpression leftOperand, IExpression rightOperand, string format = "{0} != {1}")
             : base(leftOperand, rightOperand, format) { }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
-            ExpressionResult left = LeftOperand.Evaluate(context);
-            ExpressionResult right = RightOperand.Evaluate(context);
+            IExpressionResult left = LeftOperand.Evaluate(context);
+            IExpressionResult right = RightOperand.Evaluate(context);
 
             if(left.Type == right.Type)
             {
-                result = new ExpressionResult(this.GetType().Name, ExpressionType.Truth, (!left.Value.Equals(right.Value) ? "true" : "false"), new List<ExpressionResult>() { left, right });
+                result = new ExpressionResult(this.GetType().Name, ExpressionType.Truth, (!left.Value.Equals(right.Value) ? "true" : "false"), new List<IExpressionResult>() { left, right });
                 return result;
             }
 

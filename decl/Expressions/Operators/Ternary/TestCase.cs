@@ -11,19 +11,19 @@ namespace declang.Expressions
         public TestCase(IExpression firstOperand, IExpression secondOperand, IExpression thirdOperand, string format = "{0}:{1}{{ {2} }}") 
             : base(firstOperand, secondOperand, thirdOperand, format) { }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
-            ExpressionResult iterationResult = FirstOperand.Evaluate(context);
+            IExpressionResult iterationResult = FirstOperand.Evaluate(context);
             if (Decimal.TryParse(iterationResult.Value, out decimal numIterations))
             {
                 int numSuccesses = 0;
-                ExpressionResult currentCheckResult = null;
-                List<ExpressionResult> componentResults = new List<ExpressionResult>();
+                IExpressionResult currentCheckResult = null;
+                List<IExpressionResult> componentResults = new List<IExpressionResult>();
 
                 for (var i = 0; i < numIterations; i++)
                 {
-                    ExpressionResult secondResult = 
-                    context[CURRENT_TEST_CASE_KEY] = SecondOperand.Evaluate(context);
+                    IExpressionResult secondResult = SecondOperand.Evaluate(context);
+                    context[CURRENT_TEST_CASE_KEY] = secondResult;
                     componentResults.Add(secondResult);
                     currentCheckResult = ThirdOperand.Evaluate(context);
 

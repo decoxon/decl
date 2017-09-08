@@ -16,7 +16,7 @@ namespace declang.Expressions
             }
         }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
             result = new ExpressionResult(this.GetType().Name, ExpressionType.Number, number.ToString());
             return result;

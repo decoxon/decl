@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace declang.Expressions
 {
@@ -15,17 +14,19 @@ namespace declang.Expressions
             this.variableName = variableName;
         }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
-            if (context.ContainsKey(variableName))
-            {
-                result = context[variableName];
-                return new ExpressionResult(this.GetType().Name, result.Type, result.Value, new List<ExpressionResult> { result });
-            }
-            else
-            {
-                throw new Exception(String.Format("Variable {0} does not exist in this context.", variableName));
-            }
+            return context.GetValue(variableName);
+        }
+
+        public override Variable ToVariable()
+        {
+            return this;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

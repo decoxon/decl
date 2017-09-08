@@ -6,19 +6,16 @@ using System.Threading.Tasks;
 
 namespace declang.Expressions
 {
-    internal class Parens : IExpression
+    internal class Parens : SyntaxExpression
     {
         private IExpression innerExpression;
-        private ExpressionResult result;
 
         public Parens(IExpression innerExpression)
         {
             this.innerExpression = innerExpression;
         }
 
-        public ExpressionResult Result => result;
-
-        public ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
             result = innerExpression.Evaluate(context);
             return result;

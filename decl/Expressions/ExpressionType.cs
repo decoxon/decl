@@ -32,6 +32,8 @@ namespace declang
         And,
         GreaterThanOrEqual,
         LessThanOrEqual,
-        Modulo
+        Modulo,
+        Thing,
+        Accessor
     }
 }

@@ -11,16 +11,16 @@ namespace declang.Parsing
     class Script
     {
         private List<IExpression> expressions;
-        private ExpressionResult finalResult;
+        private IExpressionResult finalResult;
 
         public Script(IEnumerable<IExpression> expressions)
         {
             this.expressions = new List<IExpression>(expressions);
         }
 
-        public ExpressionResult Run(IDictionary<string, ExpressionResult> context)
+        public IExpressionResult Run(Thing context = null)
         {
-            context = context ?? new Dictionary<string, ExpressionResult>();
+            context = context ?? new Thing();
 
             foreach (IExpression expression in expressions)
             {

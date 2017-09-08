@@ -9,11 +9,12 @@ namespace declang.Expressions
         public Assignment(Variable leftOperand, IExpression rightOperand, string format = "{0} = {1}")
             : base(leftOperand, rightOperand, format) { }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
             result = RightOperand.Evaluate(context);
-            context[((Variable)LeftOperand).Name] = result;
-            return new ExpressionResult(this.GetType().Name, result.Type, result.Value, new List<ExpressionResult> { result });
+            Variable v = leftOperand.ToVariable();
+            context.SetValue(LeftOperand.ToVariable().Name, result);
+            return new ExpressionResult(this.GetType().Name, result.Type, result.Value, new List<IExpressionResult> { result });
         }
     }
 }

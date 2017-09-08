@@ -8,13 +8,13 @@ namespace declang.Expressions
     {
         public Negation(IExpression operand, string format = "!{0}") : base(operand, format) { }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
-            ExpressionResult beforeNegation = Operand.Evaluate(context);
+            IExpressionResult beforeNegation = Operand.Evaluate(context);
 
             if(beforeNegation.Type == ExpressionType.Truth)
             {
-                result = new ExpressionResult(this.GetType().Name, ExpressionType.Truth, beforeNegation.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase) ? "false" : "true", new List<ExpressionResult>() { beforeNegation });
+                result = new ExpressionResult(this.GetType().Name, ExpressionType.Truth, beforeNegation.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase) ? "false" : "true", new List<IExpressionResult>() { beforeNegation });
                 return result;
             }
 

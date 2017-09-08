@@ -12,7 +12,7 @@ namespace declang
 
         public List<Die> Dice => dice;
 
-        public DiceRollResult(string operationType, ExpressionType type, string value, List<Die> dice, IEnumerable<ExpressionResult> componentResults = null) 
+        public DiceRollResult(string operationType, ExpressionType type, string value, List<Die> dice, IEnumerable<IExpressionResult> componentResults = null) 
             : base(operationType, type, value, componentResults)
         {
             this.dice = dice;

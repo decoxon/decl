@@ -7,15 +7,20 @@ namespace declang.Expressions
     internal abstract class Operator : IExpression
     {
         protected string format;
-        protected ExpressionResult result = null;
+        protected IExpressionResult result = null;
 
         public Operator(string format = "")
         {
             this.format = format;
         }
 
-        public ExpressionResult Result { get { return result; } }
+        public IExpressionResult Result { get { return result; } }
 
-        public abstract ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context);
+        public abstract IExpressionResult Evaluate(Thing context);
+
+        public virtual Variable ToVariable()
+        {
+            throw new Exception(String.Format("Operator {0} cannot be treated as a variable", format));
+        }
     }
 }

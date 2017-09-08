@@ -21,6 +21,28 @@ namespace declang.Parsing
             return new Script(createExpressionTrees(Tokeniser.Tokenise(expression)));
         }
 
+        public static IExpression ParseSingleStatement(string statement, bool throwOnMultiline = true)
+        {
+            if (String.IsNullOrEmpty(statement))
+            {
+                throw new ArgumentNullException("expression");
+            }
+
+            List<List<Token>> statements = Tokeniser.Tokenise(statement);
+
+            if(statements.Count < 1)
+            {
+                throw new Exception(String.Format("No statements provided: {0}", statement));
+            }
+
+            if(statements.Count > 1 && throwOnMultiline)
+            {
+                throw new Exception(String.Format("Multiple statements provided to ParseSingleStatement: {0}", statement));
+            }
+
+            return createExpressionTree(statements[0]);
+        }
+
         private static List<IExpression> createExpressionTrees(List<List<Token>> statements)
         {
             if (statements.Count <= 0)
@@ -64,6 +86,8 @@ namespace declang.Parsing
 
             switch (tokens[selectedToken].Type)
             {
+                case ExpressionType.Thing:
+                    return new ThingLiteral(parseThingString(tokens[selectedToken].Value));
                 case ExpressionType.Number:
                     return new Number(tokens[selectedToken].Value);
                 case ExpressionType.Variable:
@@ -86,6 +110,10 @@ namespace declang.Parsing
                     }
 
                     return new Parens(createExpressionTree(innerExpression[0]));
+                case ExpressionType.Accessor:
+                    return new Accessor(
+                        createExpressionTree(tokens.GetRange(0, selectedToken)),
+                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.Addition:
                     return new Addition(
                         createExpressionTree(tokens.GetRange(0, selectedToken)),
@@ -154,14 +182,8 @@ namespace declang.Parsing
                     return new Negation(createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.Assignment:
                     IExpression leftOperand = createExpressionTree(tokens.GetRange(0, selectedToken));
-
-                    if ((leftOperand as Variable) == null)
-                    {
-                        throw new Exception(String.Format("Invalid left operand for assignment: {0}", leftOperand.ToString()));
-                    }
-
                     return new Assignment(
-                        leftOperand as Variable,
+                        leftOperand.ToVariable(),
                         createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.TestCase:
                     IExpression firstOperand = createExpressionTree(tokens.GetRange(0, selectedToken));
@@ -188,5 +210,41 @@ namespace declang.Parsing
         }
 
 
+        /// <summary>
+        /// Build a dictionary based on passed in string.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static IDictionary<string, IExpression> parseThingString(string value)
+        {
+            Dictionary<string, IExpression> result = new Dictionary<string, IExpression>();
+            value = value.Trim();
+
+            if (value.Length > 0)
+            {
+                List<string> propertyLiterals = new List<string>(value.Split(new char[1] { ',' }));
+
+                foreach (string propertyLiteral in propertyLiterals)
+                {
+                    parsePropertyString(propertyLiteral, out string property, out IExpression propertyValue);
+                    result.Add(property, propertyValue);
+                }
+            }
+
+            return result;
+        }
+
+        private static void parsePropertyString(string literal, out string property, out IExpression propertyValue)
+        {
+            int firstColon = literal.IndexOf(':');
+
+            if(firstColon == -1)
+            {
+                throw new Exception(String.Format("Missing colon in property literal {0}", literal));
+            }
+
+            property = literal.Substring(0, firstColon).Trim();
+            propertyValue = ParseSingleStatement(literal.Substring(firstColon + 1));
+        }
     }
 }

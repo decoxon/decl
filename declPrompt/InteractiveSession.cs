@@ -10,12 +10,12 @@ namespace declPrompt
 {
     class InteractiveSession
     {
-        private IDictionary<string, ExpressionResult> context;
+        private IDictionary<string, IExpressionResult> context;
         private bool outputDetail = false;
 
-        public InteractiveSession(IDictionary<string, ExpressionResult> context = null)
+        public InteractiveSession(IDictionary<string, IExpressionResult> context = null)
         {
-            this.context = context ?? new Dictionary<string, ExpressionResult>();
+            this.context = context ?? new Dictionary<string, IExpressionResult>();
         }
 
         public void Start()
@@ -52,7 +52,7 @@ namespace declPrompt
             switch (statement)
             {
                 case "reset":
-                    context = new Dictionary<string, ExpressionResult>();
+                    context = new Dictionary<string, IExpressionResult>();
                     break;
                 case "context":
                     outputContext();
@@ -67,7 +67,7 @@ namespace declPrompt
             }
         }
 
-        private void outputResult(ExpressionResult result)
+        private void outputResult(IExpressionResult result)
         {
             Console.Write("<<<");
             Console.WriteLine(result);
@@ -80,7 +80,7 @@ namespace declPrompt
         private void outputContext()
         {
             Console.WriteLine("<<< Current context:");
-            foreach(KeyValuePair<string, ExpressionResult> kvp in context)
+            foreach(KeyValuePair<string, IExpressionResult> kvp in context)
             {
                 Console.WriteLine(String.Format("<<< {0}: {1} ({2})", kvp.Key, kvp.Value.Value, kvp.Value.Type.ToString()));
             }
@@ -92,7 +92,7 @@ namespace declPrompt
             return Console.ReadLine();
         }
 
-        private void outputResultTree(ExpressionResult result)
+        private void outputResultTree(IExpressionResult result)
         {
             Console.WriteLine("<<< Result Tree:");
             Console.WriteLine(result.ToResultDetailString());

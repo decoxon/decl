@@ -9,17 +9,13 @@ namespace declang
     public static class DECL
     {
 
-        public static ExpressionResult Evaluate(string expression, IDictionary<string, ExpressionResult> context = null)
+        public static IExpressionResult Evaluate(string expression, IDictionary<string, IExpressionResult> context = null)
         {
             try
             {
                 List<string> statements = new List<string>(expression.Split(Environment.NewLine.ToCharArray()));
-
-                if (context == null)
-                {
-                    context = new Dictionary<string, ExpressionResult>();
-                }
-                return Parser.Parse(expression).Run(context);
+                context = new Thing(context ?? new Dictionary<string, IExpressionResult>());
+                return Parser.Parse(expression).Run(new Thing(context));
             }
             catch (Exception e)
             {

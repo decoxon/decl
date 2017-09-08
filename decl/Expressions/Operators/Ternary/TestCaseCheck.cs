@@ -16,7 +16,7 @@ namespace declang.Expressions
             this.checkExpression = checkExpression;
         }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
             if (!context.ContainsKey(TestCase.CURRENT_TEST_CASE_KEY))
             {
@@ -35,7 +35,7 @@ namespace declang.Expressions
                 throw new Exception(String.Format("Check must evaluate to Truth value, not {0}", result.Type.ToString()));
             }
 
-            return new ExpressionResult(this.GetType().Name, ExpressionType.Truth, result.Value, new List<ExpressionResult> { result });
+            return new ExpressionResult(this.GetType().Name, ExpressionType.Truth, result.Value, new List<IExpressionResult> { result });
         }
 
         private string composeExpression(string currentCaseValue)

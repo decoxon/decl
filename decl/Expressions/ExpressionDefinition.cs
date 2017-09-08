@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace declang.Parsing
+namespace declang.Expressions
 {
     internal class ExpressionDefinition
     {

@@ -13,7 +13,7 @@ namespace declang.Expressions
             this.value = value;
         }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
             result = new ExpressionResult(this.GetType().Name, ExpressionType.Word, value);
             return result;

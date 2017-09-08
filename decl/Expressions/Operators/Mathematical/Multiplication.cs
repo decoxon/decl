@@ -8,18 +8,18 @@ namespace declang.Expressions
         public Multiplication(IExpression leftOperand, IExpression rightOperand, string format = "{0} * {1}")
             : base(leftOperand, rightOperand, format) { }
 
-        public override ExpressionResult Evaluate(IDictionary<string, ExpressionResult> context)
+        public override IExpressionResult Evaluate(Thing context)
         {
             return multiply(LeftOperand.Evaluate(context), RightOperand.Evaluate(context));
         }
 
-        private ExpressionResult multiply(ExpressionResult leftOperand, ExpressionResult rightOperand)
+        private IExpressionResult multiply(IExpressionResult leftOperand, IExpressionResult rightOperand)
         {
             if ((leftOperand.Type == ExpressionType.Number && rightOperand.Type == ExpressionType.Number))
             {
                 if (Decimal.TryParse(leftOperand.Value, out decimal leftDecimal) && Decimal.TryParse(rightOperand.Value, out decimal rightDecimal))
                 {
-                    result = new ExpressionResult(this.GetType().Name, ExpressionType.Number, (leftDecimal * rightDecimal).ToString(), new List<ExpressionResult>() { leftOperand, rightOperand });
+                    result = new ExpressionResult(this.GetType().Name, ExpressionType.Number, (leftDecimal * rightDecimal).ToString(), new List<IExpressionResult>() { leftOperand, rightOperand });
                     return result;
                 }
             }
