@@ -190,7 +190,7 @@ namespace declang.Parsing
 
                     int testCaseCheckLocation = selectedToken + 1;
 
-                    while (testCaseCheckLocation < tokens.Count && tokens[testCaseCheckLocation].Type != ExpressionType.TestCaseCheck)
+                    while (testCaseCheckLocation < tokens.Count - 1 && tokens[testCaseCheckLocation].Type != ExpressionType.TestCaseCheck)
                     {
                         testCaseCheckLocation++;
                     }

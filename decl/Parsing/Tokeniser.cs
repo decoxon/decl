@@ -77,6 +77,7 @@ namespace declang.Parsing
             int endOfToken;
             int numDecimalPoints;
             bool useDefaultTokenCreationMethod;
+            bool expectingTestCaseCheck = false;
 
             for (int currentCharacter = 0; currentCharacter < script.Length; currentCharacter++)
             {
@@ -100,6 +101,12 @@ namespace declang.Parsing
                 switch (type)
                 {
                     case ExpressionType.Thing:
+                        if (expectingTestCaseCheck)
+                        {
+                            type = ExpressionType.TestCaseCheck;
+                            expectingTestCaseCheck = false;
+                        }
+
                         endOfToken = findEndOfNestingExpression(script, currentCharacter + 1, '{', '}');
                         tokenValue = script.Substring(currentCharacter + 1, endOfToken - currentCharacter - 1);
                         tokens.Add(new Token(type, tokenValue, ExpressionDefinitions[type].Precedence));
@@ -231,12 +238,6 @@ namespace declang.Parsing
                             useDefaultTokenCreationMethod = true;
                         }
                         break;
-                    case ExpressionType.TestCaseCheck:
-                        endOfToken = findEndOfNestingExpression(script, currentCharacter + 1, '{', '}');
-                        tokenValue = script.Substring(currentCharacter + 1, endOfToken - currentCharacter - 1);
-                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions[type].Precedence));
-                        currentCharacter = endOfToken;
-                        break;
                     case ExpressionType.And:
                     case ExpressionType.Or:
                         if(currentCharacter + 1 > script.Length || script[currentCharacter + 1] != script[currentCharacter])
@@ -269,6 +270,9 @@ namespace declang.Parsing
                         }
                         break;
                     case ExpressionType.TestCase:
+                        expectingTestCaseCheck = true;
+                        useDefaultTokenCreationMethod = true;
+                        break;
                     case ExpressionType.Multiplication:
                     case ExpressionType.Division:
                     case ExpressionType.Modulo:
@@ -285,7 +289,7 @@ namespace declang.Parsing
             }
 
             // We may end up with a blank final expression if there was extra 
-            // whitespace after the last statement of the script.
+            // white space after the last statement of the script.
             if (result.Count > 0 && result[result.Count - 1].Count == 0)
             {
                 result.RemoveAt(result.Count - 1);
