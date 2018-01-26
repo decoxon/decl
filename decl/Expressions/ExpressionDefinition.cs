@@ -7,8 +7,12 @@ namespace declang.Expressions
     internal class ExpressionDefinition
     {
         public ExpressionType Type { get; set; }
+        public Type ExpressionClass { get; set; }
         public int Precedence { get; set; }
         public char[] TriggerCharacters { get; set; }
+        public char[] ValidNonTriggerCharacters { get; set; }
+        public string ToStringFormat { get; set; }
+        public Dictionary<ExpressionType, Func<ExpressionResult, ExpressionResult>> CastTo { get; set; } = new Dictionary<ExpressionType, Func<ExpressionResult, ExpressionResult>>();
 
         public bool IsTriggerCharacter(char c)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using declang.Parsing;
 
 namespace declang.Expressions
 {
@@ -9,9 +10,9 @@ namespace declang.Expressions
         protected string format;
         protected IExpressionResult result = null;
 
-        public Operator(string format = "")
+        public Operator()
         {
-            this.format = format;
+            this.format = ExpressionDefinitions.GetToStringFormatForType(this.GetType());
         }
 
         public IExpressionResult Result { get { return result; } }
@@ -20,7 +21,7 @@ namespace declang.Expressions
 
         public virtual Variable ToVariable()
         {
-            throw new Exception(String.Format("Operator {0} cannot be treated as a variable", format));
+            throw new Exception(String.Format("Operator {0} cannot be treated as a variable", String.Format(format, "", "")));
         }
     }
 }

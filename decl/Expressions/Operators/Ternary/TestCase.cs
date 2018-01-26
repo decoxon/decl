@@ -6,14 +6,14 @@ namespace declang.Expressions
 {
     internal class TestCase : TernaryOperator
     {
-        public static string CURRENT_TEST_CASE_KEY = "currentTestCaseResult";
+        public static string CURRENT_TEST_CASE_KEY = "_currentTestCaseResult";
 
-        public TestCase(IExpression firstOperand, IExpression secondOperand, IExpression thirdOperand, string format = "{0}:{1}{{ {2} }}") 
-            : base(firstOperand, secondOperand, thirdOperand, format) { }
+        public TestCase(IExpression firstOperand, IExpression secondOperand, IExpression thirdOperand) 
+            : base(firstOperand, secondOperand, thirdOperand) { }
 
         public override IExpressionResult Evaluate(Thing context)
         {
-            IExpressionResult iterationResult = FirstOperand.Evaluate(context);
+            IExpressionResult iterationResult = FirstOperand.Evaluate(context).As(ExpressionType.Number);
             if (Decimal.TryParse(iterationResult.Value, out decimal numIterations))
             {
                 int numSuccesses = 0;
@@ -25,9 +25,9 @@ namespace declang.Expressions
                     IExpressionResult secondResult = SecondOperand.Evaluate(context);
                     context[CURRENT_TEST_CASE_KEY] = secondResult;
                     componentResults.Add(secondResult);
-                    currentCheckResult = ThirdOperand.Evaluate(context);
+                    currentCheckResult = ThirdOperand.Evaluate(context).As(ExpressionType.Truth);
 
-                    if(currentCheckResult.Type == ExpressionType.Truth && currentCheckResult.Value == "true")
+                    if(currentCheckResult.Value == Truth.TRUE)
                     {
                         numSuccesses++;
                     }

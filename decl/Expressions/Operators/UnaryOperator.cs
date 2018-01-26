@@ -8,8 +8,7 @@ namespace declang.Expressions
     {
         public IExpression Operand { get; }
 
-        public UnaryOperator(IExpression operand, string format = "{0}") 
-            : base(format)
+        public UnaryOperator(IExpression operand) : base()
         {
             Operand = operand;
         }

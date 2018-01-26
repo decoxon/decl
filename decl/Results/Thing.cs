@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using declang.Parsing;
+using declang.Expressions;
 
 namespace declang
 {
@@ -35,7 +36,7 @@ namespace declang
 
             IDictionary<string, IExpressionResult> target = context ?? contents;
 
-            List<string> pathElements = new List<string>(propertyPath.Split(Tokeniser.GetTriggerCharacters(ExpressionType.Accessor)));
+            List<string> pathElements = new List<string>(propertyPath.Split(ExpressionDefinitions.GetTriggerCharacters(ExpressionType.Accessor)));
 
             if (pathElements.Count > 0 && target.ContainsKey(pathElements[0]))
             {
@@ -63,7 +64,7 @@ namespace declang
                 throw new Exception(String.Format("Empty property path for Thing {0}", this));
             }
 
-            char[] triggerCharacters = Tokeniser.GetTriggerCharacters(ExpressionType.Accessor);
+            char[] triggerCharacters = ExpressionDefinitions.GetTriggerCharacters(ExpressionType.Accessor);
 
             IDictionary<string, IExpressionResult> target = context ?? contents;
             List<string> pathElements = new List<string>(propertyPath.Split(triggerCharacters));

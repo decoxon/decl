@@ -1,6 +1,7 @@
 ﻿using declang.Expressions;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace declang.Parsing
 {
@@ -30,12 +31,12 @@ namespace declang.Parsing
 
             List<List<Token>> statements = Tokeniser.Tokenise(statement);
 
-            if(statements.Count < 1)
+            if (statements.Count < 1)
             {
                 throw new Exception(String.Format("No statements provided: {0}", statement));
             }
 
-            if(statements.Count > 1 && throwOnMultiline)
+            if (statements.Count > 1 && throwOnMultiline)
             {
                 throw new Exception(String.Format("Multiple statements provided to ParseSingleStatement: {0}", statement));
             }
@@ -87,15 +88,40 @@ namespace declang.Parsing
             switch (tokens[selectedToken].Type)
             {
                 case ExpressionType.Thing:
-                    return new ThingLiteral(parseThingString(tokens[selectedToken].Value));
                 case ExpressionType.Number:
-                    return new Number(tokens[selectedToken].Value);
                 case ExpressionType.Variable:
-                    return new Variable(tokens[selectedToken].Value);
                 case ExpressionType.Truth:
-                    return new Truth(tokens[selectedToken].Value);
                 case ExpressionType.Word:
-                    return new Word(tokens[selectedToken].Value);
+                    return (IExpression)typeof(Parser)
+                        .GetRuntimeMethod("createValueExpression", new Type[] { typeof(ExpressionType), typeof(string) })
+                        .MakeGenericMethod(ExpressionDefinitions.GetDefinition(tokens[selectedToken].Type).ExpressionClass)
+                        .Invoke(null, new object[] {
+                            tokens[selectedToken].Type,
+                            tokens[selectedToken].Value
+                        }
+                    );
+                case ExpressionType.Accessor:
+                case ExpressionType.Addition:
+                case ExpressionType.Subtraction:
+                case ExpressionType.Multiplication:
+                case ExpressionType.Division:
+                case ExpressionType.Modulo:
+                case ExpressionType.DiceRoll:
+                case ExpressionType.LessThan:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                case ExpressionType.And:
+                case ExpressionType.Or:
+                    return (IExpression)typeof(Parser)
+                        .GetRuntimeMethod("createBinaryOperatorExpression", new Type[] { typeof(ExpressionType), typeof(List<Token>), typeof(List<Token>) })
+                        .MakeGenericMethod(ExpressionDefinitions.GetDefinition(tokens[selectedToken].Type).ExpressionClass)
+                        .Invoke(null, new object[] {
+                            tokens[selectedToken].Type,
+                            tokens.GetRange(0, selectedToken),
+                            tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)
+                        }
+                    );
                 case ExpressionType.Parens:
                     List<List<Token>> innerExpression = Tokeniser.Tokenise(tokens[selectedToken].Value);
 
@@ -110,58 +136,6 @@ namespace declang.Parsing
                     }
 
                     return new Parens(createExpressionTree(innerExpression[0]));
-                case ExpressionType.Accessor:
-                    return new Accessor(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.Addition:
-                    return new Addition(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.Subtraction:
-                    return new Subtraction(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.Multiplication:
-                    return new Multiplication(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.Division:
-                    return new Division(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.Modulo:
-                    return new Modulo(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.DiceRoll:
-                    return new DiceRoll(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.LessThan:
-                    return new LessThan(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.GreaterThan:
-                    return new GreaterThan(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.Equal:
-                    return new Equal(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.NotEqual:
-                    return new NotEqual(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.And:
-                    return new And(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
-                case ExpressionType.Or:
-                    return new Or(
-                        createExpressionTree(tokens.GetRange(0, selectedToken)),
-                        createExpressionTree(tokens.GetRange(selectedToken + 1, tokens.Count - 1 - selectedToken)));
                 case ExpressionType.GreaterThanOrEqual:
                     return new Or(
                         new GreaterThan(
@@ -209,42 +183,28 @@ namespace declang.Parsing
             }
         }
 
-
-        /// <summary>
-        /// Build a dictionary based on passed in string.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private static IDictionary<string, IExpression> parseThingString(string value)
+        public static IExpression createValueExpression<T>(ExpressionType type, string value)
+            where T : ValueExpression
         {
-            Dictionary<string, IExpression> result = new Dictionary<string, IExpression>();
-            value = value.Trim();
-
-            if (value.Length > 0)
-            {
-                List<string> propertyLiterals = new List<string>(value.Split(new char[1] { ',' }));
-
-                foreach (string propertyLiteral in propertyLiterals)
-                {
-                    parsePropertyString(propertyLiteral, out string property, out IExpression propertyValue);
-                    result.Add(property, propertyValue);
-                }
-            }
-
-            return result;
+            return (T)Activator.CreateInstance(typeof(T), value);
         }
 
-        private static void parsePropertyString(string literal, out string property, out IExpression propertyValue)
+        public static IExpression createUnaryOperatorExpression<T>(ExpressionType type, List<Token> operand)
+            where T : UnaryOperator
         {
-            int firstColon = literal.IndexOf(':');
+            return (T)Activator.CreateInstance(typeof(T), createExpressionTree(operand));
+        }
 
-            if(firstColon == -1)
-            {
-                throw new Exception(String.Format("Missing colon in property literal {0}", literal));
-            }
+        public static IExpression createBinaryOperatorExpression<T>(ExpressionType type, List<Token> leftOperand, List<Token> rightOperand)
+            where T : BinaryOperator
+        {
+            return (T)Activator.CreateInstance(typeof(T), createExpressionTree(leftOperand), createExpressionTree(rightOperand));
+        }
 
-            property = literal.Substring(0, firstColon).Trim();
-            propertyValue = ParseSingleStatement(literal.Substring(firstColon + 1));
+        public static IExpression createTernaryOperatorExpression<T>(ExpressionType type, List<Token> firstOperand, List<Token> secondOperand, List<Token> thirdOperand)
+            where T : TernaryOperator
+        {
+            return (T)Activator.CreateInstance(typeof(T), firstOperand, secondOperand, thirdOperand);
         }
     }
 }

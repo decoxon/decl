@@ -11,8 +11,7 @@ namespace declang.Expressions
         public IExpression LeftOperand => leftOperand;
         public IExpression RightOperand => rightOperand;
 
-        public BinaryOperator(IExpression leftOperand, IExpression rightOperand, string format = "{0}{1}") 
-            : base(format)
+        public BinaryOperator(IExpression leftOperand, IExpression rightOperand) : base()
         {
             this.leftOperand = leftOperand;
             this.rightOperand = rightOperand;

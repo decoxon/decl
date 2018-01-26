@@ -8,7 +8,7 @@ namespace declang.Expressions
 {
     internal class TestCaseCheck : ValueExpression
     {
-        public const string substituteString = "#";
+        public const string CHECK_VALUE_SUBSTITUTION_STRING = "#";
         private string checkExpression;
 
         public TestCaseCheck(string checkExpression)
@@ -20,31 +20,21 @@ namespace declang.Expressions
         {
             if (!context.ContainsKey(TestCase.CURRENT_TEST_CASE_KEY))
             {
-                throw new Exception(String.Format("Current test case result not present in context at key {0}", TestCase.CURRENT_TEST_CASE_KEY));
+                throw new Exception($"Current test case result not present in context at key {TestCase.CURRENT_TEST_CASE_KEY}");
             }
 
-            if (context[TestCase.CURRENT_TEST_CASE_KEY].Type != ExpressionType.Number)
-            {
-                throw new Exception(String.Format("Test Case result must be a Number, not {0}", context[TestCase.CURRENT_TEST_CASE_KEY]));
-            }
-
-            result = Parser.Parse(composeExpression(context[TestCase.CURRENT_TEST_CASE_KEY].Value)).Run(context);
-
-            if (result.Type != ExpressionType.Truth)
-            {
-                throw new Exception(String.Format("Check must evaluate to Truth value, not {0}", result.Type.ToString()));
-            }
+            result = Parser.Parse(composeExpression(context[TestCase.CURRENT_TEST_CASE_KEY].Value)).Run(context).As(ExpressionType.Truth);
 
             return new ExpressionResult(this.GetType().Name, ExpressionType.Truth, result.Value, new List<IExpressionResult> { result });
         }
 
         private string composeExpression(string currentCaseValue)
         {
-            Regex regex = new Regex(substituteString);
+            Regex regex = new Regex(CHECK_VALUE_SUBSTITUTION_STRING);
 
             if (regex.IsMatch(checkExpression))
             {
-                return regex.Replace(substituteString, currentCaseValue);
+                return regex.Replace(CHECK_VALUE_SUBSTITUTION_STRING, currentCaseValue);
             }
             else
             {
@@ -52,11 +42,11 @@ namespace declang.Expressions
                 {
                     if(Parser.Parse(checkExpression).IsSingleExpressionOfType<ValueExpression>())
                     {
-                        return currentCaseValue + "==" + checkExpression;
+                        return String.Format(ExpressionDefinitions.GetDefinition(ExpressionType.Equal).ToStringFormat, currentCaseValue, checkExpression);
                     }
                 }
-                // Fall through to standard return if parsing goes wrong.
-                catch(Exception e) {  }
+                // If parsing fails, assume that check expression assumes the current value will be prepended to it.
+                catch(Exception) {  }
 
                 return currentCaseValue + checkExpression;
             }

@@ -5,8 +5,8 @@ namespace declang.Expressions
 {
     internal class Addition : BinaryOperator
     {
-        public Addition(IExpression leftOperand, IExpression rightOperand, string format = "{0} + {1}")
-            : base(leftOperand, rightOperand, format) { }
+        public Addition(IExpression leftOperand, IExpression rightOperand)
+            : base(leftOperand, rightOperand) { }
 
         public override IExpressionResult Evaluate(Thing context)
         {
@@ -15,16 +15,12 @@ namespace declang.Expressions
 
         private IExpressionResult add(IExpressionResult leftOperand, IExpressionResult rightOperand)
         {
-            if ((leftOperand.Type == ExpressionType.Number && rightOperand.Type == ExpressionType.Number))
-            {
-                if (Decimal.TryParse(leftOperand.Value, out decimal leftDecimal) && Decimal.TryParse(rightOperand.Value, out decimal rightDecimal))
-                {
-                    result = new ExpressionResult(this.GetType().Name, ExpressionType.Number, (leftDecimal + rightDecimal).ToString(), new List<IExpressionResult>() { leftOperand, rightOperand });
-                    return result;
-                }
-            }
-
-            throw new Exception(String.Format("Cannot add expressions of type {0} and {1}", leftOperand.Type, rightOperand.Type));
+            IExpressionResult left = leftOperand.As(ExpressionType.Number);
+            IExpressionResult right = rightOperand.As(ExpressionType.Number);
+            decimal leftDecimal = Decimal.Parse(left.Value);
+            decimal rightDecimal = Decimal.Parse(right.Value);
+            result = new ExpressionResult(this.GetType().Name, ExpressionType.Number, (leftDecimal + rightDecimal).ToString(), new List<IExpressionResult>() { left, right });
+            return result;
         }
     }
 }

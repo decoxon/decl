@@ -10,7 +10,7 @@ namespace declang
         ExpressionType Type { get; }
         string Value { get; }
         IEnumerable<IExpressionResult> ComponentResults { get; }
-
         string ToResultDetailString(int depth = 0);
+        IExpressionResult As(ExpressionType type);
     }
 }

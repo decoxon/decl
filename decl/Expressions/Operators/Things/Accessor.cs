@@ -7,24 +7,18 @@ namespace declang.Expressions
 {
     internal class Accessor : BinaryOperator
     {
-        public Accessor(IExpression leftOperand, IExpression rightOperand, string format = "{0}.{1}") 
-            : base(leftOperand, rightOperand, format)
+        public Accessor(IExpression leftOperand, IExpression rightOperand) 
+            : base(leftOperand, rightOperand)
         {
             if(!(LeftOperand.ToVariable() is Variable) || !(RightOperand.ToVariable() is Variable))
             {
-                throw new Exception(String.Format("Invalid operands for accessor operator: {0} {1}", LeftOperand, RightOperand));
+                throw new Exception(String.Format("Invalid operands for access operator: {0} {1}", LeftOperand, RightOperand));
             }
         }
 
         public override IExpressionResult Evaluate(Thing context)
         {
-            IExpressionResult container = leftOperand.Evaluate(context);
-
-            if (!(container is Thing))
-            {
-                throw new Exception(String.Format("Left operand is not a Thing: {0}", leftOperand.Result));
-            }
-
+            IExpressionResult container = leftOperand.Evaluate(context).As(ExpressionType.Thing);
             return ((Thing)container).GetValue(((Variable)rightOperand).Name);
         }
 

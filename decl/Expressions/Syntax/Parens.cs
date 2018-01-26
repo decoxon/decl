@@ -1,4 +1,5 @@
-﻿using System;
+﻿using declang.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,7 @@ namespace declang.Expressions
 
         public override string ToString()
         {
-            return String.Format("({0})", innerExpression.ToString());
+            return String.Format(ExpressionDefinitions.GetToStringFormatForType(this.GetType()), innerExpression.ToString());
         }
     }
 }

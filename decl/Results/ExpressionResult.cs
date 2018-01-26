@@ -71,5 +71,22 @@ namespace declang
             spacing += "-";
             return spacing;
         }
+
+        public IExpressionResult As(ExpressionType destType)
+        {
+            if(Type == destType)
+            {
+                return this;
+            }
+
+            ExpressionDefinition def = ExpressionDefinitions.GetDefinition(Type);
+
+            if (!def.CastTo.ContainsKey(destType))
+            {
+                throw new Exception($"Cannot cast {Type.ToString()} to {destType.ToString()}");
+            }
+
+            return def.CastTo[destType](this);
+        }
     }
 }

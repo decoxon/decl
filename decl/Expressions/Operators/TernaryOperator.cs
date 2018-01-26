@@ -14,8 +14,7 @@ namespace declang.Expressions
         public IExpression SecondOperand => secondOperand;
         public IExpression ThirdOperand => thirdOperand;
 
-        public TernaryOperator(IExpression firstOperand, IExpression secondOperand, IExpression thirdOperand, string format = "{0}{1}{2}") 
-            : base(format)
+        public TernaryOperator(IExpression firstOperand, IExpression secondOperand, IExpression thirdOperand) : base()
         {
             this.firstOperand = firstOperand;
             this.secondOperand = secondOperand;

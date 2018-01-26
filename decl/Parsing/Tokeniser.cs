@@ -7,45 +7,9 @@ namespace declang.Parsing
 {
     internal static class Tokeniser
     {
-        private static Dictionary<ExpressionType, ExpressionDefinition> ExpressionDefinitions = new Dictionary<ExpressionType, ExpressionDefinition>
-        {
-            {ExpressionType.Variable,           new ExpressionDefinition { Type = ExpressionType.Variable,              Precedence = 6, TriggerCharacters = new char[53] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','_' } } },
-            {ExpressionType.Number,             new ExpressionDefinition { Type = ExpressionType.Number,                Precedence = 6, TriggerCharacters = new char[10] {  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' } } },
-            {ExpressionType.Truth,              new ExpressionDefinition { Type = ExpressionType.Truth,                 Precedence = 6, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.Word,               new ExpressionDefinition { Type = ExpressionType.Word,                  Precedence = 6, TriggerCharacters = new char[2] { '"', '"' } } },
-            {ExpressionType.Thing,              new ExpressionDefinition { Type = ExpressionType.Thing,                 Precedence = 6, TriggerCharacters = new char[1] { '{' } } },
-            {ExpressionType.Parens,             new ExpressionDefinition { Type = ExpressionType.Parens,                Precedence = 6, TriggerCharacters = new char[2] { '(', ')' } } },
-            {ExpressionType.Accessor,           new ExpressionDefinition { Type = ExpressionType.Accessor,              Precedence = 5, TriggerCharacters = new char[1] { '.' } } },
-            {ExpressionType.Negation,           new ExpressionDefinition { Type = ExpressionType.Negation,              Precedence = 4, TriggerCharacters = new char[1] { '!' } } },
-            {ExpressionType.Multiplication,     new ExpressionDefinition { Type = ExpressionType.Multiplication,        Precedence = 3, TriggerCharacters = new char[1] { '*' } } },
-            {ExpressionType.Division,           new ExpressionDefinition { Type = ExpressionType.Division,              Precedence = 3, TriggerCharacters = new char[1] { '/' } } },
-            {ExpressionType.Modulo,             new ExpressionDefinition { Type = ExpressionType.Modulo,                Precedence = 3, TriggerCharacters = new char[1] { '%' } } },
-            {ExpressionType.DiceRoll,           new ExpressionDefinition { Type = ExpressionType.DiceRoll,              Precedence = 3, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.Addition,           new ExpressionDefinition { Type = ExpressionType.Addition,              Precedence = 2, TriggerCharacters = new char[1] { '+' } } },
-            {ExpressionType.Subtraction,        new ExpressionDefinition { Type = ExpressionType.Subtraction,           Precedence = 2, TriggerCharacters = new char[1] { '-' } } },
-            {ExpressionType.TestCaseCheck,      new ExpressionDefinition { Type = ExpressionType.TestCaseCheck,         Precedence = 2, TriggerCharacters = new char[1] { '{' } } },
-            {ExpressionType.LessThan,           new ExpressionDefinition { Type = ExpressionType.LessThan,              Precedence = 1, TriggerCharacters = new char[1] { '<' } } },
-            {ExpressionType.GreaterThan,        new ExpressionDefinition { Type = ExpressionType.GreaterThan,           Precedence = 1, TriggerCharacters = new char[1] { '>' } } },
-            {ExpressionType.LessThanOrEqual,    new ExpressionDefinition { Type = ExpressionType.LessThanOrEqual,       Precedence = 1, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.GreaterThanOrEqual, new ExpressionDefinition { Type = ExpressionType.GreaterThanOrEqual,    Precedence = 1, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.NotEqual,           new ExpressionDefinition { Type = ExpressionType.NotEqual,              Precedence = 1, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.Equal,              new ExpressionDefinition { Type = ExpressionType.Equal,                 Precedence = 1, TriggerCharacters = new char[0] {  } } },
-            {ExpressionType.And,                new ExpressionDefinition { Type = ExpressionType.And,                   Precedence = 1, TriggerCharacters = new char[1] { '&' } } },
-            {ExpressionType.Or,                 new ExpressionDefinition { Type = ExpressionType.Or,                    Precedence = 1, TriggerCharacters = new char[1] { '|' } } },
-            {ExpressionType.TestCase,           new ExpressionDefinition { Type = ExpressionType.TestCase,              Precedence = 1, TriggerCharacters = new char[1] { ':' } } },
-            {ExpressionType.Assignment,         new ExpressionDefinition { Type = ExpressionType.Assignment,            Precedence = 0, TriggerCharacters = new char[1] { '=' } } },
-            {ExpressionType.Ignore,             new ExpressionDefinition { Type = ExpressionType.Ignore,                Precedence = 9, TriggerCharacters = new char[2] { ' ', ';' } } },
-        };
+        
 
-        public static char[] GetTriggerCharacters(ExpressionType type)
-        {
-            if (!ExpressionDefinitions.ContainsKey(type) || ExpressionDefinitions[type].TriggerCharacters.Length < 1)
-            {
-                throw new Exception(String.Format("No trigger characters defined for expression type {0}", type.ToString()));
-            }
-
-            return ExpressionDefinitions[type].TriggerCharacters;
-        }
+        
 
         private static char[] validIdentifierCharacters = new char[63]
         {
@@ -95,7 +59,7 @@ namespace declang.Parsing
                     }
                 }
 
-                ExpressionType type = getCharacterType(script[currentCharacter]);
+                ExpressionType type = ExpressionDefinitions.GetCharacterType(script[currentCharacter]);
                 useDefaultTokenCreationMethod = false;
 
                 switch (type)
@@ -109,7 +73,7 @@ namespace declang.Parsing
 
                         endOfToken = findEndOfNestingExpression(script, currentCharacter + 1, '{', '}');
                         tokenValue = script.Substring(currentCharacter + 1, endOfToken - currentCharacter - 1);
-                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions[type].Precedence));
+                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions.GetDefinition(type).Precedence));
                         currentCharacter = endOfToken;
                         break;
                     case ExpressionType.Number:
@@ -117,7 +81,7 @@ namespace declang.Parsing
                         endOfToken = currentCharacter;
                         numDecimalPoints = 0;
                         while (endOfToken < script.Length
-                            && (getCharacterType(script[endOfToken]) == ExpressionType.Number
+                            && (ExpressionDefinitions.GetCharacterType(script[endOfToken]) == ExpressionType.Number
                                 || (endOfToken == currentCharacter && (script[endOfToken] == '-' || script[endOfToken] == '+'))))
                         {
                             // Count decimal points and throw exception if there are more than one.
@@ -136,7 +100,7 @@ namespace declang.Parsing
                         endOfToken--;
 
                         tokenValue = script.Substring(currentCharacter, endOfToken - currentCharacter + 1);
-                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions[type].Precedence));
+                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions.GetDefinition(type).Precedence));
                         currentCharacter = endOfToken;
                         break;
                     case ExpressionType.Variable:
@@ -145,7 +109,7 @@ namespace declang.Parsing
 
                         // Check for DiceRoll operator
                         if (script.Length > currentCharacter + 1 && (script[currentCharacter] == 'd' || script[currentCharacter] == 'D')
-                            && (getCharacterType(script[currentCharacter + 1]) == ExpressionType.Number || getCharacterType(script[currentCharacter + 1]) == ExpressionType.Parens))
+                            && (ExpressionDefinitions.GetCharacterType(script[currentCharacter + 1]) == ExpressionType.Number || ExpressionDefinitions.GetCharacterType(script[currentCharacter + 1]) == ExpressionType.Parens))
                         {
                             tokenType = ExpressionType.DiceRoll;
 
@@ -154,7 +118,7 @@ namespace declang.Parsing
                             // D operator because it is a binary operator and therefore requires two operands.
                             if (tokens.Count == 0 || (tokens[tokens.Count - 1].Type != ExpressionType.Number && tokens[tokens.Count - 1].Type != ExpressionType.Variable && tokens[tokens.Count - 1].Type != ExpressionType.Parens))
                             {
-                                tokens.Add(new Token(ExpressionType.Number, "1", ExpressionDefinitions[ExpressionType.Number].Precedence));
+                                tokens.Add(new Token(ExpressionType.Number, "1", ExpressionDefinitions.GetDefinition(ExpressionType.Number).Precedence));
                             }
                         }
                         // Check for truth value
@@ -185,26 +149,26 @@ namespace declang.Parsing
                         }
 
                         tokenValue = script.Substring(currentCharacter, endOfToken - currentCharacter + 1);
-                        tokens.Add(new Token(tokenType, tokenValue, ExpressionDefinitions[tokenType].Precedence));
+                        tokens.Add(new Token(tokenType, tokenValue, ExpressionDefinitions.GetDefinition(tokenType).Precedence));
                         currentCharacter = endOfToken;
                         break;
                     case ExpressionType.Word:
                         int endOfString = findEndOfNestingExpression(script, currentCharacter + 1, '"', '"', true);
                         tokenValue = removeEscapeSequences(script.Substring(currentCharacter + 1, endOfString - currentCharacter - 1));
-                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions[type].Precedence));
+                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions.GetDefinition(type).Precedence));
                         currentCharacter = endOfString;
                         break;
                     case ExpressionType.Parens:
                         int endOfParen = findEndOfNestingExpression(script, currentCharacter + 1, '(', ')');
                         tokenValue = script.Substring(currentCharacter + 1, endOfParen - currentCharacter - 1);
-                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions[type].Precedence));
+                        tokens.Add(new Token(type, tokenValue, ExpressionDefinitions.GetDefinition(type).Precedence));
                         currentCharacter = endOfParen;
                         break;
                     case ExpressionType.Negation:
                         // Check for NotEqual operator
                         if (script.Length >= currentCharacter && script[currentCharacter + 1] == '=')
                         {
-                            tokens.Add(new Token(ExpressionType.NotEqual, "!=", ExpressionDefinitions[ExpressionType.Negation].Precedence));
+                            tokens.Add(new Token(ExpressionType.NotEqual, "!=", ExpressionDefinitions.GetDefinition(ExpressionType.Negation).Precedence));
                             currentCharacter++;
                         }
                         else
@@ -230,7 +194,7 @@ namespace declang.Parsing
                         // Check for Equal operator
                         if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
                         {
-                            tokens.Add(new Token(ExpressionType.Equal, "==", ExpressionDefinitions[ExpressionType.Equal].Precedence));
+                            tokens.Add(new Token(ExpressionType.Equal, "==", ExpressionDefinitions.GetDefinition(ExpressionType.Equal).Precedence));
                             currentCharacter++;
                         }
                         else
@@ -240,17 +204,17 @@ namespace declang.Parsing
                         break;
                     case ExpressionType.And:
                     case ExpressionType.Or:
-                        if(currentCharacter + 1 > script.Length || script[currentCharacter + 1] != script[currentCharacter])
+                        if (currentCharacter + 1 > script.Length || script[currentCharacter + 1] != script[currentCharacter])
                         {
                             throw new Exception(String.Format("Second \"{0}\" expected", script[currentCharacter]));
                         }
-                        tokens.Add(new Token(type, script.Substring(currentCharacter, 2), ExpressionDefinitions[type].Precedence));
+                        tokens.Add(new Token(type, script.Substring(currentCharacter, 2), ExpressionDefinitions.GetDefinition(type).Precedence));
                         currentCharacter++;
                         break;
                     case ExpressionType.LessThan:
                         if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
                         {
-                            tokens.Add(new Token(ExpressionType.LessThanOrEqual, "<=", ExpressionDefinitions[ExpressionType.LessThanOrEqual].Precedence));
+                            tokens.Add(new Token(ExpressionType.LessThanOrEqual, "<=", ExpressionDefinitions.GetDefinition(ExpressionType.LessThanOrEqual).Precedence));
                             currentCharacter++;
                         }
                         else
@@ -261,7 +225,7 @@ namespace declang.Parsing
                     case ExpressionType.GreaterThan:
                         if (script.Length >= currentCharacter + 1 && script[currentCharacter + 1] == '=')
                         {
-                            tokens.Add(new Token(ExpressionType.GreaterThanOrEqual, ">=", ExpressionDefinitions[ExpressionType.GreaterThanOrEqual].Precedence));
+                            tokens.Add(new Token(ExpressionType.GreaterThanOrEqual, ">=", ExpressionDefinitions.GetDefinition(ExpressionType.GreaterThanOrEqual).Precedence));
                             currentCharacter++;
                         }
                         else
@@ -284,7 +248,7 @@ namespace declang.Parsing
 
                 if (useDefaultTokenCreationMethod)
                 {
-                    tokens.Add(new Token(type, script.Substring(currentCharacter, 1), ExpressionDefinitions[type].Precedence));
+                    tokens.Add(new Token(type, script.Substring(currentCharacter, 1), ExpressionDefinitions.GetDefinition(type).Precedence));
                 }
             }
 
@@ -305,18 +269,7 @@ namespace declang.Parsing
             return newExpression;
         }
 
-        private static ExpressionType getCharacterType(char c)
-        {
-            foreach (KeyValuePair<ExpressionType, ExpressionDefinition> type in ExpressionDefinitions)
-            {
-                if (type.Value.IsTriggerCharacter(c))
-                {
-                    return type.Key;
-                }
-            }
-
-            throw new Exception(String.Format("Invalid character '{0}' in expression.", c));
-        }
+        
 
         private static bool isAnOperator(ExpressionType type)
         {
