@@ -19,22 +19,22 @@ namespace declang.Expressions
             IExpressionResult left = LeftOperand.Evaluate(context);
             IExpressionResult right = RightOperand.Evaluate(context);
 
-            if (Int32.TryParse(Math.Floor(Convert.ToDecimal(left.Value)).ToString(), out int numberOfDice)
-                && Int32.TryParse(Math.Floor(Convert.ToDecimal(right.Value)).ToString(), out int numberOfSides))
+            if (Int32.TryParse(Math.Floor(Convert.ToDecimal(left.Value)).ToString("G29"), out int numberOfDice)
+                && Int32.TryParse(Math.Floor(Convert.ToDecimal(right.Value)).ToString("G29"), out int numberOfSides))
             {
                 for (var i = 0; i < numberOfDice; i++)
                 {
                     dice.Add(new ContiguousNumericDie(numberOfSides));
                 }
 
-                int result = 0;
+                decimal result = 0M;
 
                 foreach (ContiguousNumericDie die in dice)
                 {
                     result += die.Roll();
                 }
 
-                this.result = new DiceRollResult(this.GetType().Name, ExpressionType.Number, result.ToString(), dice, new List<IExpressionResult>() { left, right });
+                this.result = new DiceRollResult(this.GetType().Name, ExpressionType.Number, result.ToString("G29"), dice, new List<IExpressionResult>() { left, right });
                 return this.result;
             }
 
