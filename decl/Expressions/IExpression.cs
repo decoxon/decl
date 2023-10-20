@@ -4,10 +4,10 @@ using System.Text;
 
 namespace declang.Expressions
 {
-    internal interface IExpression
-    {
-        IExpressionResult Result { get; }
-        IExpressionResult Evaluate(Thing context);
-        Variable ToVariable();
-    }
+  internal interface IExpression
+  {
+    IExpressionResult Result { get; }
+    IExpressionResult Evaluate(Thing context);
+    Variable ToVariable();
+  }
 }

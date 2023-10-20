@@ -4,9 +4,9 @@ using System.Globalization;
 
 namespace declang.Expressions
 {
-    internal static class ExpressionDefinitions
-    {
-        private static readonly Dictionary<ExpressionType, ExpressionDefinition> expressionDefinitions = new Dictionary<ExpressionType, ExpressionDefinition>
+  internal static class ExpressionDefinitions
+  {
+    private static readonly Dictionary<ExpressionType, ExpressionDefinition> expressionDefinitions = new Dictionary<ExpressionType, ExpressionDefinition>
         {
             {ExpressionType.Ignore,             new ExpressionDefinition {
                 Type = ExpressionType.Ignore,
@@ -209,50 +209,50 @@ namespace declang.Expressions
             } },
         };
 
-        public static ExpressionDefinition GetDefinition(ExpressionType type)
-        {
-            return expressionDefinitions.ContainsKey(type) ? expressionDefinitions[type] : null;
-        }
-
-        public static ExpressionType GetCharacterType(char c)
-        {
-            foreach (var type in expressionDefinitions)
-            {
-                if (type.Value.IsTriggerCharacter(c))
-                {
-                    return type.Key;
-                }
-            }
-
-            throw new Exception(String.Format("Invalid character '{0}' in expression.", c));
-        }
-
-        public static char[] GetTriggerCharacters(ExpressionType type)
-        {
-            if (!expressionDefinitions.ContainsKey(type) || expressionDefinitions[type].TriggerCharacters.Length < 1)
-            {
-                throw new Exception(String.Format("No trigger characters defined for expression type {0}", type.ToString()));
-            }
-
-            return expressionDefinitions[type].TriggerCharacters;
-        }
-
-        public static string GetToStringFormatForType(Type type)
-        {
-            foreach (var kvp in expressionDefinitions)
-            {
-                if (type == kvp.Value.ExpressionClass)
-                {
-                    return kvp.Value.ToStringFormat;
-                }
-            }
-
-            return String.Empty;
-        }
-
-        private static ExpressionResult BuildCastResult(ExpressionType type, string value, IExpressionResult originalResult)
-        {
-            return new ExpressionResult("Cast", type, value, new List<IExpressionResult>() { originalResult });
-        }
+    public static ExpressionDefinition GetDefinition(ExpressionType type)
+    {
+      return expressionDefinitions.ContainsKey(type) ? expressionDefinitions[type] : null;
     }
+
+    public static ExpressionType GetCharacterType(char c)
+    {
+      foreach (var type in expressionDefinitions)
+      {
+        if (type.Value.IsTriggerCharacter(c))
+        {
+          return type.Key;
+        }
+      }
+
+      throw new Exception(String.Format("Invalid character '{0}' in expression.", c));
+    }
+
+    public static char[] GetTriggerCharacters(ExpressionType type)
+    {
+      if (!expressionDefinitions.ContainsKey(type) || expressionDefinitions[type].TriggerCharacters.Length < 1)
+      {
+        throw new Exception(String.Format("No trigger characters defined for expression type {0}", type.ToString()));
+      }
+
+      return expressionDefinitions[type].TriggerCharacters;
+    }
+
+    public static string GetToStringFormatForType(Type type)
+    {
+      foreach (var kvp in expressionDefinitions)
+      {
+        if (type == kvp.Value.ExpressionClass)
+        {
+          return kvp.Value.ToStringFormat;
+        }
+      }
+
+      return String.Empty;
+    }
+
+    private static ExpressionResult BuildCastResult(ExpressionType type, string value, IExpressionResult originalResult)
+    {
+      return new ExpressionResult("Cast", type, value, new List<IExpressionResult>() { originalResult });
+    }
+  }
 }
