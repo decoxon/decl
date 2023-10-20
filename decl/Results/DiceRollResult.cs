@@ -20,7 +20,7 @@ namespace declang
 
         public override string ToResultDetailString(int depth = 0)
         {
-            string spacing = GetSpacingString(depth);
+            var spacing = GetSpacingString(depth);
             StringBuilder detailString = GetBasicValueStringBuilder(spacing);
             
             foreach(Die die in dice)

@@ -29,7 +29,7 @@ namespace declang.Parsing
                 throw new ArgumentNullException("expression");
             }
 
-            List<List<Token>> statements = Tokeniser.Tokenise(statement);
+            var statements = Tokeniser.Tokenise(statement);
 
             if (statements.Count < 1)
             {
@@ -51,9 +51,9 @@ namespace declang.Parsing
                 return new List<IExpression>() { new Word("") };
             }
 
-            List<IExpression> expressions = new List<IExpression>();
+            var expressions = new List<IExpression>();
 
-            foreach (List<Token> statement in statements)
+            foreach (var statement in statements)
             {
                 expressions.Add(createExpressionTree(statement));
             }
@@ -75,9 +75,9 @@ namespace declang.Parsing
             }
 
             // Find the right-most, lowest precedence token
-            int selectedToken = tokens.Count - 1;
+            var selectedToken = tokens.Count - 1;
 
-            for (int currentTokenIndex = tokens.Count - 1; currentTokenIndex >= 0; currentTokenIndex--)
+            for (var currentTokenIndex = tokens.Count - 1; currentTokenIndex >= 0; currentTokenIndex--)
             {
                 if (tokens[currentTokenIndex].Precedence < tokens[selectedToken].Precedence)
                 {
@@ -123,7 +123,7 @@ namespace declang.Parsing
                         }
                     );
                 case ExpressionType.Parens:
-                    List<List<Token>> innerExpression = Tokeniser.Tokenise(tokens[selectedToken].Value);
+                    var innerExpression = Tokeniser.Tokenise(tokens[selectedToken].Value);
 
                     if (innerExpression.Count <= 0)
                     {
@@ -162,7 +162,7 @@ namespace declang.Parsing
                 case ExpressionType.TestCase:
                     IExpression firstOperand = createExpressionTree(tokens.GetRange(0, selectedToken));
 
-                    int testCaseCheckLocation = selectedToken + 1;
+                    var testCaseCheckLocation = selectedToken + 1;
 
                     while (testCaseCheckLocation < tokens.Count - 1 && tokens[testCaseCheckLocation].Type != ExpressionType.TestCaseCheck)
                     {

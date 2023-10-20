@@ -13,14 +13,14 @@ namespace declPrompt
     {
         static void Main(string[] args)
         {
-            Arguments arguments = new Arguments();
-            CommandLine.Parser parser = new CommandLine.Parser(with => with.MutuallyExclusive = true);
+            var arguments = new Arguments();
+            var parser = new CommandLine.Parser(with => with.MutuallyExclusive = true);
 
             if(parser.ParseArguments(args, arguments))
             {
                 if (arguments.IsInteractiveModeRequested)
                 {
-                    InteractiveSession session = new InteractiveSession();
+                    var session = new InteractiveSession();
                     session.Start();
                 }
                 else if (!String.IsNullOrEmpty(arguments.FilePath))

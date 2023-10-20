@@ -21,7 +21,7 @@ namespace declang.Dice
         {
             if (!HasBeenRolled)
             {
-                Random rng = new Random(Guid.NewGuid().GetHashCode());
+                var rng = new Random(Guid.NewGuid().GetHashCode());
 
                 Result = rng.Next(minResult, minResult + Sides - 1);
 

@@ -30,7 +30,7 @@ namespace declang.Expressions
 
         private string composeExpression(string currentCaseValue)
         {
-            Regex regex = new Regex(CHECK_VALUE_SUBSTITUTION_STRING);
+            var regex = new Regex(CHECK_VALUE_SUBSTITUTION_STRING);
 
             if (regex.IsMatch(checkExpression))
             {

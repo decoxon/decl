@@ -17,8 +17,8 @@ namespace declang.Expressions
         {
             IExpressionResult left = leftOperand.As(ExpressionType.Number);
             IExpressionResult right = rightOperand.As(ExpressionType.Number);
-            decimal leftDecimal = Decimal.Parse(left.Value);
-            decimal rightDecimal = Decimal.Parse(right.Value);
+            var leftDecimal = Decimal.Parse(left.Value);
+            var rightDecimal = Decimal.Parse(right.Value);
             result = new ExpressionResult(this.GetType().Name, ExpressionType.Number, (leftDecimal + rightDecimal).ToString("G29"), new List<IExpressionResult>() { left, right });
             return result;
         }

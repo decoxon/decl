@@ -14,11 +14,11 @@ namespace declang.Expressions
         public override IExpressionResult Evaluate(Thing context)
         {
             IExpressionResult iterationResult = FirstOperand.Evaluate(context).As(ExpressionType.Number);
-            if (Decimal.TryParse(iterationResult.Value, out decimal numIterations))
+            if (Decimal.TryParse(iterationResult.Value, out var numIterations))
             {
-                int numSuccesses = 0;
+                var numSuccesses = 0;
                 IExpressionResult currentCheckResult = null;
-                List<IExpressionResult> componentResults = new List<IExpressionResult>();
+                var componentResults = new List<IExpressionResult>();
 
                 for (var i = 0; i < numIterations; i++)
                 {

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using declang.Parsing;
 using declang.Expressions;
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("test declang")]
 
 namespace declang
 {
@@ -13,7 +16,7 @@ namespace declang
         {
             try
             {
-                List<string> statements = new List<string>(expression.Split(Environment.NewLine.ToCharArray()));
+                var statements = new List<string>(expression.Split(Environment.NewLine.ToCharArray()));
                 context = new Thing(context ?? new Dictionary<string, IExpressionResult>());
                 return Parser.Parse(expression).Run(new Thing(context));
             }

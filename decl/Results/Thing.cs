@@ -34,9 +34,9 @@ namespace declang
                 throw new Exception(String.Format("Empty property path for Thing {0}", this));
             }
 
-            IDictionary<string, IExpressionResult> target = context ?? contents;
+            var target = context ?? contents;
 
-            List<string> pathElements = new List<string>(propertyPath.Split(ExpressionDefinitions.GetTriggerCharacters(ExpressionType.Accessor)));
+            var pathElements = new List<string>(propertyPath.Split(ExpressionDefinitions.GetTriggerCharacters(ExpressionType.Accessor)));
 
             if (pathElements.Count > 0 && target.ContainsKey(pathElements[0]))
             {
@@ -64,10 +64,10 @@ namespace declang
                 throw new Exception(String.Format("Empty property path for Thing {0}", this));
             }
 
-            char[] triggerCharacters = ExpressionDefinitions.GetTriggerCharacters(ExpressionType.Accessor);
+            var triggerCharacters = ExpressionDefinitions.GetTriggerCharacters(ExpressionType.Accessor);
 
-            IDictionary<string, IExpressionResult> target = context ?? contents;
-            List<string> pathElements = new List<string>(propertyPath.Split(triggerCharacters));
+            var target = context ?? contents;
+            var pathElements = new List<string>(propertyPath.Split(triggerCharacters));
 
             if (pathElements.Count > 0)
             {
@@ -78,7 +78,7 @@ namespace declang
                         target[pathElements[0]] = new Thing();
                     }
 
-                    Thing subObject = target[pathElements[0]] as Thing;
+                    var subObject = target[pathElements[0]] as Thing;
                     pathElements.RemoveAt(0);
                     return subObject.SetValue(String.Join(".", pathElements.ToArray()), value);
 
@@ -101,13 +101,13 @@ namespace declang
 
         private StringBuilder contentsToStringBuilder()
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             stringBuilder.Append("{");
 
             if (contents.Count > 0)
             {
-                foreach (KeyValuePair<string, IExpressionResult> kvp in contents)
+                foreach (var kvp in contents)
                 {
                     keyValuePairToStringBuilder(stringBuilder, kvp);
                     stringBuilder.Append(", ");

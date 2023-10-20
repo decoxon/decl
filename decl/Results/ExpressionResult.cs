@@ -32,7 +32,7 @@ namespace declang
 
         public virtual string ToResultDetailString(int depth = 0)
         {
-            string spacing = GetSpacingString(depth);
+            var spacing = GetSpacingString(depth);
 
             StringBuilder detailString = GetBasicValueStringBuilder(spacing);
 
@@ -43,7 +43,7 @@ namespace declang
 
         protected StringBuilder GetBasicValueStringBuilder(string spacing)
         {
-            StringBuilder detailString = new StringBuilder();
+            var detailString = new StringBuilder();
             detailString.Append(spacing);
             detailString.Append(operationType);
             detailString.Append("(");
@@ -63,8 +63,8 @@ namespace declang
 
         protected string GetSpacingString(int depth)
         {
-            string spacing = "";
-            for (int i = 0; i < depth; i++)
+            var spacing = "";
+            for (var i = 0; i < depth; i++)
             {
                 spacing += "  ";
             }
@@ -83,7 +83,7 @@ namespace declang
 
             if (!def.CastTo.ContainsKey(destType))
             {
-                throw new Exception($"Cannot cast {Type.ToString()} to {destType.ToString()}");
+                throw new InvalidCastException($"Cannot cast {Type.ToString()} to {destType.ToString()}");
             }
 
             return def.CastTo[destType](this);

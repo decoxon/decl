@@ -16,36 +16,33 @@ namespace declang.Expressions
         public override IExpressionResult Evaluate(Thing context)
         {
             dice = new List<Die>();
-            IExpressionResult left = LeftOperand.Evaluate(context);
-            IExpressionResult right = RightOperand.Evaluate(context);
+            IExpressionResult left = LeftOperand.Evaluate(context).As(ExpressionType.Number);
+            IExpressionResult right = RightOperand.Evaluate(context).As(ExpressionType.Number);
 
-            if (Int32.TryParse(Math.Floor(Convert.ToDecimal(left.Value)).ToString("G29"), out int numberOfDice)
-                && Int32.TryParse(Math.Floor(Convert.ToDecimal(right.Value)).ToString("G29"), out int numberOfSides))
+            var numberOfDice = Decimal.Parse(left.Value);
+            var numberOfSides = Convert.ToInt32(Math.Floor(Decimal.Parse(right.Value)));
+
+            for (var i = 0; i < numberOfDice; i++)
             {
-                for (var i = 0; i < numberOfDice; i++)
-                {
-                    dice.Add(new ContiguousNumericDie(numberOfSides));
-                }
-
-                decimal result = 0M;
-
-                foreach (ContiguousNumericDie die in dice)
-                {
-                    result += die.Roll();
-                }
-
-                this.result = new DiceRollResult(this.GetType().Name, ExpressionType.Number, result.ToString("G29"), dice, new List<IExpressionResult>() { left, right });
-                return this.result;
+                dice.Add(new ContiguousNumericDie(numberOfSides));
             }
 
-            throw new Exception(String.Format("Invalid dice operator operands {0} and {1}", LeftOperand.ToString(), RightOperand.ToString()));
+            var result = 0M;
+
+            foreach (ContiguousNumericDie die in dice)
+            {
+                result += die.Roll();
+            }
+
+            this.result = new DiceRollResult(this.GetType().Name, ExpressionType.Number, result.ToString("G29"), dice, new List<IExpressionResult>() { left, right });
+            return this.result;
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            for (int i = 0; i < dice.Count; i++)
+            for (var i = 0; i < dice.Count; i++)
             {
                 if (i != 0)
                 {

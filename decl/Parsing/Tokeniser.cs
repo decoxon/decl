@@ -27,7 +27,7 @@ namespace declang.Parsing
         /// <returns>The list of Tokens for the given expression.</returns>
         public static List<List<Token>> Tokenise(string script)
         {
-            List<List<Token>> result = new List<List<Token>>();
+            var result = new List<List<Token>>();
 
             if (String.IsNullOrEmpty(script))
             {
@@ -35,15 +35,15 @@ namespace declang.Parsing
             }
 
             // Add first line of resulting expression list
-            List<Token> tokens = addExpressionToResult(result);
+            var tokens = addExpressionToResult(result);
 
             string tokenValue;
             int endOfToken;
             int numDecimalPoints;
             bool useDefaultTokenCreationMethod;
-            bool expectingTestCaseCheck = false;
+            var expectingTestCaseCheck = false;
 
-            for (int currentCharacter = 0; currentCharacter < script.Length; currentCharacter++)
+            for (var currentCharacter = 0; currentCharacter < script.Length; currentCharacter++)
             {
                 if (Char.IsWhiteSpace(script[currentCharacter]))
                 {
@@ -81,7 +81,7 @@ namespace declang.Parsing
                         endOfToken = currentCharacter;
                         numDecimalPoints = 0;
                         while (endOfToken < script.Length
-                            && (ExpressionDefinitions.GetCharacterType(script[endOfToken]) == ExpressionType.Number
+                            && (ExpressionDefinitions.GetDefinition(ExpressionType.Number).IsValidCharacter(script[endOfToken])
                                 || (endOfToken == currentCharacter && (script[endOfToken] == '-' || script[endOfToken] == '+'))))
                         {
                             // Count decimal points and throw exception if there are more than one.
@@ -153,13 +153,13 @@ namespace declang.Parsing
                         currentCharacter = endOfToken;
                         break;
                     case ExpressionType.Word:
-                        int endOfString = findEndOfNestingExpression(script, currentCharacter + 1, '"', '"', true);
+                        var endOfString = findEndOfNestingExpression(script, currentCharacter + 1, '"', '"', true);
                         tokenValue = removeEscapeSequences(script.Substring(currentCharacter + 1, endOfString - currentCharacter - 1));
                         tokens.Add(new Token(type, tokenValue, ExpressionDefinitions.GetDefinition(type).Precedence));
                         currentCharacter = endOfString;
                         break;
                     case ExpressionType.Parens:
-                        int endOfParen = findEndOfNestingExpression(script, currentCharacter + 1, '(', ')');
+                        var endOfParen = findEndOfNestingExpression(script, currentCharacter + 1, '(', ')');
                         tokenValue = script.Substring(currentCharacter + 1, endOfParen - currentCharacter - 1);
                         tokens.Add(new Token(type, tokenValue, ExpressionDefinitions.GetDefinition(type).Precedence));
                         currentCharacter = endOfParen;
@@ -264,7 +264,7 @@ namespace declang.Parsing
 
         private static List<Token> addExpressionToResult(List<List<Token>> result)
         {
-            List<Token> newExpression = new List<Token>();
+            var newExpression = new List<Token>();
             result.Add(newExpression);
             return newExpression;
         }
@@ -278,8 +278,8 @@ namespace declang.Parsing
 
         private static int findEndOfNestingExpression(string expression, int startAt, char openingCharacter, char closingCharacter, bool canEscape = false, char escapeChar = '\\')
         {
-            int nestingLevel = 0;
-            int ending = startAt;
+            var nestingLevel = 0;
+            var ending = startAt;
 
             for (; ending < expression.Length; ending++)
             {
@@ -325,8 +325,8 @@ namespace declang.Parsing
 
         private static string removeEscapeSequences(string unescapeString)
         {
-            string result = unescapeString;
-            for (int i = 0; i < unescapeString.Length; i++)
+            var result = unescapeString;
+            for (var i = 0; i < unescapeString.Length; i++)
             {
                 if (unescapeString[i] == '\\')
                 {

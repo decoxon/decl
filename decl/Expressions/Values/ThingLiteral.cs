@@ -17,9 +17,9 @@ namespace declang.Expressions
 
         public override IExpressionResult Evaluate(Thing context)
         {
-            Dictionary<string, IExpressionResult> result = new Dictionary<string, IExpressionResult>();
+            var result = new Dictionary<string, IExpressionResult>();
 
-            foreach(KeyValuePair<string, IExpression> kvp in contents)
+            foreach(var kvp in contents)
             {
                 result[kvp.Key] = kvp.Value.Evaluate(context);
             }
@@ -34,16 +34,16 @@ namespace declang.Expressions
         /// <returns></returns>
         private static IDictionary<string, IExpression> parseLiteral(string value)
         {
-            Dictionary<string, IExpression> result = new Dictionary<string, IExpression>();
+            var result = new Dictionary<string, IExpression>();
             value = value.Trim();
 
             if (value.Length > 0)
             {
-                List<string> propertyLiterals = new List<string>(value.Split(new char[1] { ',' }));
+                var propertyLiterals = new List<string>(value.Split(new char[1] { ',' }));
 
-                foreach (string propertyLiteral in propertyLiterals)
+                foreach (var propertyLiteral in propertyLiterals)
                 {
-                    parsePropertyString(propertyLiteral, out string property, out IExpression propertyValue);
+                    parsePropertyString(propertyLiteral, out var property, out IExpression propertyValue);
                     result.Add(property, propertyValue);
                 }
             }
@@ -53,7 +53,7 @@ namespace declang.Expressions
 
         private static void parsePropertyString(string literal, out string property, out IExpression propertyValue)
         {
-            int firstColon = literal.IndexOf(':');
+            var firstColon = literal.IndexOf(':');
 
             if (firstColon == -1)
             {

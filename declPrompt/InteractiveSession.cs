@@ -69,7 +69,7 @@ namespace declPrompt
 
         private void outputResult(IExpressionResult result)
         {
-            Console.Write("<<<");
+            Console.Write("<<< ");
             Console.WriteLine(result);
             if (outputDetail)
             {
@@ -80,7 +80,7 @@ namespace declPrompt
         private void outputContext()
         {
             Console.WriteLine("<<< Current context:");
-            foreach(KeyValuePair<string, IExpressionResult> kvp in context)
+            foreach(var kvp in context)
             {
                 Console.WriteLine(String.Format("<<< {0}: {1} ({2})", kvp.Key, kvp.Value.Value, kvp.Value.Type.ToString()));
             }
@@ -88,7 +88,7 @@ namespace declPrompt
 
         private string getStatement()
         {
-            Console.Write(">>>");
+            Console.Write(">>> ");
             return Console.ReadLine();
         }
 
